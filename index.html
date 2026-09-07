@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Omri Vainz</title>
+<meta name="description" content="Omri Vainz — Software Engineer. A nostalgic Windows XP-style personal desktop.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='2' width='13' height='13' fill='%23f25022'/%3E%3Crect x='17' y='2' width='13' height='13' fill='%237fba00'/%3E%3Crect x='2' y='17' width='13' height='13' fill='%2300a4ef'/%3E%3Crect x='17' y='17' width='13' height='13' fill='%23ffb900'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<!-- ============ ICON SPRITE SHEET ============ -->
+<svg style="display:none">
+  <symbol id="icon-user" viewBox="0 0 32 32">
+    <circle cx="16" cy="11" r="6" fill="#ffd8a8"/>
+    <path d="M4 28c0-7 5-11 12-11s12 4 12 11" fill="#4f7cff"/>
+    <circle cx="16" cy="11" r="6" fill="none" stroke="#7a4b1e" stroke-width="1"/>
+  </symbol>
+  <symbol id="icon-folder" viewBox="0 0 32 32">
+    <path d="M3 9h9l3 3h14v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9z" fill="#ffd35c" stroke="#c98f0a" stroke-width="1"/>
+    <path d="M3 9h9l2 2H3z" fill="#ffe9a8"/>
+  </symbol>
+  <symbol id="icon-code" viewBox="0 0 32 32">
+    <rect x="3" y="5" width="26" height="22" rx="2" fill="#1e2a3a"/>
+    <path d="M9 12l-4 4 4 4M23 12l4 4-4 4M17 10l-2 12" stroke="#7cff7c" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="icon-mail" viewBox="0 0 32 32">
+    <rect x="3" y="7" width="26" height="18" rx="2" fill="#eaf1ff" stroke="#5b7fd6" stroke-width="1.5"/>
+    <path d="M4 8l12 10L28 8" fill="none" stroke="#5b7fd6" stroke-width="1.5"/>
+  </symbol>
+  <symbol id="icon-computer" viewBox="0 0 32 32">
+    <rect x="3" y="6" width="26" height="16" rx="1.5" fill="#dfe8f5" stroke="#7a90b8" stroke-width="1.5"/>
+    <rect x="6" y="9" width="20" height="10" fill="#2a5ca8"/>
+    <rect x="11" y="24" width="10" height="3" fill="#b9c3d6"/>
+    <rect x="8" y="27" width="16" height="2" fill="#8f9bb8"/>
+  </symbol>
+  <symbol id="icon-trash" viewBox="0 0 32 32">
+    <path d="M8 10h16l-1.5 17a2 2 0 0 1-2 1.8h-9a2 2 0 0 1-2-1.8L8 10z" fill="#dfe8f5" stroke="#7a90b8" stroke-width="1.3"/>
+    <path d="M6 10h20M12 10l1-3h6l1 3" fill="none" stroke="#7a90b8" stroke-width="1.3"/>
+    <path d="M13 13l.7 11M16 13v11M19 13l-.7 11" stroke="#7a90b8" stroke-width="1"/>
+  </symbol>
+  <symbol id="icon-mine" viewBox="0 0 32 32">
+    <circle cx="16" cy="18" r="9" fill="#2b2b2b"/>
+    <circle cx="13" cy="15" r="2" fill="#ffffff" opacity=".5"/>
+    <g stroke="#2b2b2b" stroke-width="2">
+      <path d="M16 5v4M16 27v-4M3 18h4M25 18h4M6.5 8.5l3 3M22.5 8.5l-3 3M6.5 27.5l3-3M22.5 27.5l-3-3"/>
+    </g>
+  </symbol>
+  <symbol id="icon-note" viewBox="0 0 32 32">
+    <path d="M17 3l9 9v16a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10z" fill="#fffef2" stroke="#c9b95a" stroke-width="1.3"/>
+    <path d="M17 3v9h9" fill="none" stroke="#c9b95a" stroke-width="1.3"/>
+    <path d="M10 17h12M10 21h12M10 25h8" stroke="#a89a4c" stroke-width="1.2"/>
+  </symbol>
+  <symbol id="icon-flag" viewBox="0 0 32 32">
+    <rect x="2" y="2" width="13" height="13" fill="#f25022"/>
+    <rect x="17" y="2" width="13" height="13" fill="#7fba00"/>
+    <rect x="2" y="17" width="13" height="13" fill="#00a4ef"/>
+    <rect x="17" y="17" width="13" height="13" fill="#ffb900"/>
+  </symbol>
+  <symbol id="icon-note-play" viewBox="0 0 32 32">
+    <circle cx="10" cy="24" r="4" fill="#0a0"/>
+    <circle cx="24" cy="21" r="4" fill="#0a0"/>
+    <path d="M14 24V6l14-3v18" stroke="#0a0" stroke-width="2" fill="none"/>
+  </symbol>
+  <symbol id="icon-close" viewBox="0 0 12 12"><path d="M2 2l8 8M10 2l-8 8" stroke="#fff" stroke-width="1.6"/></symbol>
+</svg>
+
+<!-- ============ DESKTOP ============ -->
+<div id="desktop">
+  <div class="clouds"></div>
+  <div class="hill hill-back"></div>
+  <div class="hill hill-front"></div>
+
+  <div class="icons" id="desktop-icons">
+    <button class="desktop-icon" data-window="win-about">
+      <svg><use href="#icon-user"/></svg><span>About Me</span>
+    </button>
+    <button class="desktop-icon" data-window="win-project">
+      <svg><use href="#icon-code"/></svg><span>agentic-libs</span>
+    </button>
+    <button class="desktop-icon" data-link="https://github.com/omrizz">
+      <svg><use href="#icon-folder"/></svg><span>GitHub</span>
+    </button>
+    <button class="desktop-icon" data-link="mailto:omrivainz@gmail.com">
+      <svg><use href="#icon-mail"/></svg><span>Email</span>
+    </button>
+    <button class="desktop-icon" data-window="win-minesweeper">
+      <svg><use href="#icon-mine"/></svg><span>Minesweeper</span>
+    </button>
+    <button class="desktop-icon" data-window="win-computer">
+      <svg><use href="#icon-computer"/></svg><span>My Computer</span>
+    </button>
+    <button class="desktop-icon" data-window="win-recycle">
+      <svg><use href="#icon-trash"/></svg><span>Recycle Bin</span>
+    </button>
+  </div>
+
+  <!-- ============ WINDOWS ============ -->
+
+  <div class="window" id="win-about" data-icon="icon-user" style="top:70px;left:90px;width:400px;">
+    <div class="title-bar">
+      <svg class="title-icon"><use href="#icon-user"/></svg>
+      <div class="title-bar-text">About Me.txt - Notepad</div>
+      <div class="title-bar-controls">
+        <button class="tb-btn tb-min" aria-label="Minimize">&#x2013;</button>
+        <button class="tb-btn tb-max" aria-label="Maximize">&#x25a1;</button>
+        <button class="tb-btn tb-close" aria-label="Close"><svg><use href="#icon-close"/></svg></button>
+      </div>
+    </div>
+    <div class="menu-bar">File&nbsp;&nbsp;Edit&nbsp;&nbsp;Format&nbsp;&nbsp;View&nbsp;&nbsp;Help</div>
+    <div class="window-body notepad-body">
+<pre>Omri Vainz
+Software Engineer
+
+Building tools that make agents (and the humans
+behind them) more productive.
+
+Right now I'm working on agentic-libs, a set of
+reusable building blocks for autonomous agents.
+
+Find me on GitHub or drop a line by email --
+both are on the desktop.</pre>
+    </div>
+  </div>
+
+  <div class="window" id="win-project" data-icon="icon-code" style="top:110px;left:170px;width:420px;">
+    <div class="title-bar">
+      <svg class="title-icon"><use href="#icon-code"/></svg>
+      <div class="title-bar-text">agentic-libs - Project</div>
+      <div class="title-bar-controls">
+        <button class="tb-btn tb-min" aria-label="Minimize">&#x2013;</button>
+        <button class="tb-btn tb-max" aria-label="Maximize">&#x25a1;</button>
+        <button class="tb-btn tb-close" aria-label="Close"><svg><use href="#icon-close"/></svg></button>
+      </div>
+    </div>
+    <div class="window-body project-body">
+      <h2>agentic-libs</h2>
+      <p class="status-line"><span class="dot"></span> currently building this</p>
+      <p>A collection of reusable agent building blocks, used to
+      automate the bug-creation process end-to-end: creating the
+      ticket, extracting the relevant affected areas, and writing
+      and executing tests.</p>
+      <a class="xp-button link-button" href="https://github.com/omrizz/agentic-libs" target="_blank" rel="noopener">View on GitHub &rarr;</a>
+    </div>
+  </div>
+
+  <div class="window" id="win-computer" data-icon="icon-computer" style="top:150px;left:260px;width:360px;">
+    <div class="title-bar">
+      <svg class="title-icon"><use href="#icon-computer"/></svg>
+      <div class="title-bar-text">My Computer - System Properties</div>
+      <div class="title-bar-controls">
+        <button class="tb-btn tb-min" aria-label="Minimize">&#x2013;</button>
+        <button class="tb-btn tb-max" aria-label="Maximize">&#x25a1;</button>
+        <button class="tb-btn tb-close" aria-label="Close"><svg><use href="#icon-close"/></svg></button>
+      </div>
+    </div>
+    <div class="window-body sysinfo-body">
+      <table>
+        <tr><td>Registered to:</td><td>Omri Vainz</td></tr>
+        <tr><td>Operating System:</td><td>OmriOS XP</td></tr>
+        <tr><td>Role:</td><td>Software Engineer</td></tr>
+        <tr><td>Repository:</td><td>github.com/omrizz</td></tr>
+        <tr><td>Uptime:</td><td id="uptime">0s</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="window" id="win-recycle" data-icon="icon-trash" style="top:190px;left:340px;width:320px;">
+    <div class="title-bar">
+      <svg class="title-icon"><use href="#icon-trash"/></svg>
+      <div class="title-bar-text">Recycle Bin</div>
+      <div class="title-bar-controls">
+        <button class="tb-btn tb-min" aria-label="Minimize">&#x2013;</button>
+        <button class="tb-btn tb-max" aria-label="Maximize">&#x25a1;</button>
+        <button class="tb-btn tb-close" aria-label="Close"><svg><use href="#icon-close"/></svg></button>
+      </div>
+    </div>
+    <div class="window-body recycle-body">
+      <svg class="big-icon"><use href="#icon-trash"/></svg>
+      <p>Recycle Bin is empty.</p>
+      <p class="muted">No failed side-projects here. Yet.</p>
+    </div>
+  </div>
+
+  <div class="window" id="win-minesweeper" data-icon="icon-mine" style="top:120px;left:420px;width:auto;">
+    <div class="title-bar">
+      <svg class="title-icon"><use href="#icon-mine"/></svg>
+      <div class="title-bar-text">Minesweeper</div>
+      <div class="title-bar-controls">
+        <button class="tb-btn tb-min" aria-label="Minimize">&#x2013;</button>
+        <button class="tb-btn tb-max" aria-label="Maximize">&#x25a1;</button>
+        <button class="tb-btn tb-close" aria-label="Close"><svg><use href="#icon-close"/></svg></button>
+      </div>
+    </div>
+    <div class="window-body minesweeper-body">
+      <div class="ms-panel">
+        <div class="ms-counter" id="ms-mine-count">010</div>
+        <button class="ms-face" id="ms-face" aria-label="Reset game">&#x1F642;</button>
+        <div class="ms-counter" id="ms-timer">000</div>
+      </div>
+      <div class="ms-grid" id="ms-grid"></div>
+    </div>
+  </div>
+
+  <div class="window winamp-window" id="win-winamp" data-icon="icon-note-play" style="top:60px;left:600px;width:auto;">
+    <div class="title-bar winamp-title">
+      <div class="title-bar-text">winamp</div>
+      <div class="title-bar-controls">
+        <button class="tb-btn tb-min" aria-label="Minimize">&#x2013;</button>
+        <button class="tb-btn tb-close" aria-label="Close"><svg><use href="#icon-close"/></svg></button>
+      </div>
+    </div>
+    <div class="window-body winamp-body">
+      <canvas id="winamp-viz" width="260" height="40"></canvas>
+      <div class="winamp-display">
+        <span id="winamp-time">00:00</span>
+        <div class="winamp-marquee"><span id="winamp-track">Omri Vainz -- Untitled Loop.chip &nbsp;&nbsp;&bull;&nbsp;&nbsp; Omri Vainz -- Untitled Loop.chip &nbsp;&nbsp;&bull;&nbsp;&nbsp; </span></div>
+        <span class="winamp-specs">128kbps &bull; 44kHz &bull; stereo</span>
+      </div>
+      <div class="winamp-controls">
+        <button id="winamp-play" class="winamp-btn" title="Play">&#9654;</button>
+        <button id="winamp-pause" class="winamp-btn" title="Pause">&#10073;&#10073;</button>
+        <button id="winamp-stop" class="winamp-btn" title="Stop">&#9632;</button>
+        <button id="winamp-shuffle" class="winamp-btn winamp-toggle" title="Shuffle melody">SHUF</button>
+        <button id="winamp-repeat" class="winamp-btn winamp-toggle active" title="Repeat">REP</button>
+        <input id="winamp-volume" type="range" min="0" max="100" value="60">
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SHUTDOWN OVERLAY ============ -->
+  <div id="shutdown-overlay" hidden>
+    <div id="shutdown-dialog">
+      <p>What do you want the computer to do?</p>
+      <div class="shutdown-options">
+        <button data-action="cancel" class="shutdown-opt">
+          <svg><use href="#icon-computer"/></svg><span>Cancel</span>
+        </button>
+        <button data-action="restart" class="shutdown-opt">
+          <svg><use href="#icon-computer"/></svg><span>Restart</span>
+        </button>
+        <button data-action="off" class="shutdown-opt">
+          <svg><use href="#icon-computer"/></svg><span>Turn Off</span>
+        </button>
+      </div>
+      <div class="shutdown-buttons">
+        <button data-action="cancel" class="xp-button">Cancel</button>
+      </div>
+    </div>
+  </div>
+  <div id="shutdown-screen" hidden>
+    <p>It's now safe to close this tab.</p>
+    <button id="reboot-btn" class="xp-button">Reboot</button>
+  </div>
+</div>
+
+<!-- ============ TASKBAR ============ -->
+<div id="taskbar">
+  <button id="start-button">
+    <svg><use href="#icon-flag"/></svg>
+    <span>start</span>
+  </button>
+  <div id="taskbar-windows"></div>
+  <div id="system-tray">
+    <button id="tray-winamp" title="Winamp">&#9835;</button>
+    <span id="tray-clock">00:00 PM</span>
+  </div>
+</div>
+
+<!-- ============ START MENU ============ -->
+<div id="start-menu" hidden>
+  <div class="start-menu-header">
+    <svg><use href="#icon-user"/></svg>
+    <span>Omri Vainz</span>
+  </div>
+  <div class="start-menu-body">
+    <button class="start-item" data-window="win-about"><svg><use href="#icon-user"/></svg>About Me</button>
+    <button class="start-item" data-window="win-project"><svg><use href="#icon-code"/></svg>agentic-libs</button>
+    <button class="start-item" data-window="win-minesweeper"><svg><use href="#icon-mine"/></svg>Minesweeper</button>
+    <button class="start-item" data-window="win-winamp"><svg><use href="#icon-note-play"/></svg>Winamp</button>
+    <button class="start-item" data-link="https://github.com/omrizz"><svg><use href="#icon-folder"/></svg>GitHub</button>
+    <button class="start-item" data-link="mailto:omrivainz@gmail.com"><svg><use href="#icon-mail"/></svg>Email</button>
+  </div>
+  <div class="start-menu-footer">
+    <button id="shutdown-button" class="start-item"><svg><use href="#icon-computer"/></svg>Turn Off Computer</button>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+<script src="assets/minesweeper.js"></script>
+<script src="assets/winamp.js"></script>
+</body>
+</html>

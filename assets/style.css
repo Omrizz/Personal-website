@@ -1,0 +1,570 @@
+/* ===================================================================
+   Omri Vainz -- personal site
+   A from-scratch homage to the Windows XP desktop UI. All chrome,
+   icons and wallpaper below are original recreations, not copied
+   Microsoft assets.
+   =================================================================== */
+
+:root {
+  --xp-blue-dark: #0a246a;
+  --xp-blue-mid: #3a93ff;
+  --xp-blue-light: #a6d2ff;
+  --xp-titlebar-1: #0058ee;
+  --xp-titlebar-2: #3a93ff;
+  --xp-titlebar-3: #86c2ff;
+  --xp-face: #ece9d8;
+  --xp-face-dark: #aca899;
+  --xp-face-light: #ffffff;
+  --xp-taskbar-1: #245edb;
+  --xp-taskbar-2: #3f8cf3;
+  --xp-taskbar-3: #1941a5;
+  --xp-green-1: #3f9e2e;
+  --xp-green-2: #6dc44a;
+  --xp-text: #111;
+  --sky-top: #1e6fd9;
+  --sky-bottom: #bfe3ff;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  font-family: Tahoma, Verdana, "Segoe UI", Arial, sans-serif;
+  font-size: 12px;
+  color: var(--xp-text);
+  -webkit-user-select: none;
+  user-select: none;
+  background: var(--sky-bottom);
+}
+
+button { font-family: inherit; font-size: inherit; }
+
+svg { display: block; width: 100%; height: 100%; }
+
+/* ---------------- Desktop / wallpaper ---------------- */
+
+#desktop {
+  position: relative;
+  width: 100%;
+  height: calc(100% - 34px);
+  overflow: hidden;
+  background: linear-gradient(to bottom, var(--sky-top) 0%, #5fa8ec 45%, var(--sky-bottom) 78%);
+}
+
+.clouds {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(60px 22px at 12% 18%, rgba(255,255,255,.85), rgba(255,255,255,0) 70%),
+    radial-gradient(90px 28px at 18% 20%, rgba(255,255,255,.75), rgba(255,255,255,0) 70%),
+    radial-gradient(70px 24px at 70% 10%, rgba(255,255,255,.8), rgba(255,255,255,0) 70%),
+    radial-gradient(100px 30px at 78% 13%, rgba(255,255,255,.7), rgba(255,255,255,0) 70%),
+    radial-gradient(60px 20px at 45% 26%, rgba(255,255,255,.6), rgba(255,255,255,0) 70%);
+}
+
+.hill {
+  position: absolute;
+  left: -10%;
+  width: 120%;
+  height: 46%;
+  bottom: 0;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+}
+.hill-back {
+  bottom: 6%;
+  height: 38%;
+  background: linear-gradient(to bottom, #6fc24a, #3f9e2e);
+  opacity: .9;
+}
+.hill-front {
+  height: 30%;
+  background: linear-gradient(to bottom, #8fd85f, #4fae34);
+}
+
+/* ---------------- Desktop icons ---------------- */
+
+.icons {
+  position: absolute;
+  top: 12px;
+  left: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 1;
+}
+
+.desktop-icon {
+  width: 86px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: #fff;
+  padding: 6px 2px;
+  cursor: pointer;
+  border-radius: 2px;
+}
+.desktop-icon svg { width: 32px; height: 32px; filter: drop-shadow(0 1px 1px rgba(0,0,0,.6)); }
+.desktop-icon span {
+  text-shadow: 1px 1px 2px rgba(0,0,0,.85);
+  line-height: 1.2;
+  text-align: center;
+  font-size: 11px;
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: none;
+}
+.desktop-icon:hover, .desktop-icon:focus-visible {
+  background: rgba(255,255,255,.15);
+  border: 1px dotted rgba(255,255,255,.6);
+  outline: none;
+}
+.desktop-icon:active { background: rgba(255,255,255,.3); }
+
+/* ---------------- Windows ---------------- */
+
+.window {
+  position: absolute;
+  display: none;
+  flex-direction: column;
+  min-width: 220px;
+  background: var(--xp-face);
+  border: 1px solid #1450b0;
+  border-radius: 8px 8px 4px 4px;
+  box-shadow: 3px 4px 18px rgba(0,0,0,.45);
+  overflow: hidden;
+  z-index: 10;
+}
+.window.open { display: flex; }
+.window.maximized {
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 0;
+}
+.window.minimized { display: none; }
+
+.title-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 4px 3px 6px;
+  background: linear-gradient(to bottom, var(--xp-titlebar-3) 0%, var(--xp-titlebar-1) 8%, var(--xp-titlebar-1) 60%, var(--xp-titlebar-2) 100%);
+  color: #fff;
+  font-weight: bold;
+  cursor: default;
+  touch-action: none;
+}
+.title-icon { width: 16px; height: 16px; flex: none; }
+.title-bar-text {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 1px 1px 1px rgba(0,0,0,.4);
+  font-size: 12px;
+}
+.title-bar-controls { display: flex; gap: 2px; }
+.tb-btn {
+  width: 20px;
+  height: 18px;
+  border: 1px solid rgba(255,255,255,.6);
+  border-radius: 3px;
+  background: linear-gradient(to bottom, #4f9bf0, #1a5fd0);
+  color: #fff;
+  font-weight: bold;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tb-btn svg { width: 9px; height: 9px; }
+.tb-btn:hover { filter: brightness(1.15); }
+.tb-close { background: linear-gradient(to bottom, #f0958a, #c33a2e); }
+.tb-close:hover { background: linear-gradient(to bottom, #ff6b5c, #e23a2a); }
+
+.menu-bar {
+  background: var(--xp-face);
+  border-bottom: 1px solid var(--xp-face-dark);
+  padding: 2px 6px;
+  color: #333;
+}
+
+.window-body {
+  flex: 1;
+  background: var(--xp-face);
+  padding: 10px;
+  overflow: auto;
+}
+
+/* Notepad window */
+.notepad-body { background: #fff; padding: 0; }
+.notepad-body pre {
+  margin: 0;
+  padding: 10px 12px;
+  font-family: "Courier New", monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+/* Project window */
+.project-body h2 { margin: 0 0 4px; }
+.status-line { display: flex; align-items: center; gap: 6px; color: #2f7d1f; font-weight: bold; }
+.status-line .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #3fbf3f;
+  box-shadow: 0 0 4px #3fbf3f;
+  animation: pulse 1.6s infinite;
+}
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+.project-body p { line-height: 1.5; }
+
+.xp-button {
+  font-family: inherit;
+  background: linear-gradient(to bottom, #fefefe, #d9d9d9);
+  border: 1px solid #7a7a7a;
+  border-radius: 3px;
+  padding: 5px 14px;
+  cursor: pointer;
+}
+.xp-button:hover { background: linear-gradient(to bottom, #ffffff, #e6e6e6); }
+.xp-button:active { background: #cfcfcf; }
+.link-button {
+  display: inline-block;
+  text-decoration: none;
+  color: #111;
+  margin-top: 8px;
+}
+
+/* System info window */
+.sysinfo-body table { border-collapse: collapse; width: 100%; }
+.sysinfo-body td { padding: 4px 6px; vertical-align: top; }
+.sysinfo-body td:first-child { color: #444; white-space: nowrap; }
+.sysinfo-body td:last-child { font-weight: bold; }
+
+/* Recycle bin */
+.recycle-body { text-align: center; padding: 20px 10px; }
+.recycle-body .big-icon { width: 64px; height: 64px; margin: 0 auto 10px; }
+.recycle-body .muted { color: #666; font-size: 11px; }
+
+/* ---------------- Minesweeper ---------------- */
+
+.minesweeper-body {
+  background: var(--xp-face);
+  padding: 8px;
+}
+.ms-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--xp-face);
+  border: 2px solid;
+  border-color: #808080 #fff #fff #808080;
+  padding: 6px;
+  margin-bottom: 8px;
+}
+.ms-counter {
+  font-family: "Courier New", monospace;
+  font-weight: bold;
+  background: #000;
+  color: #ff2b2b;
+  padding: 2px 6px;
+  font-size: 20px;
+  letter-spacing: 2px;
+  min-width: 46px;
+  text-align: center;
+  border: 1px solid #400;
+}
+.ms-face {
+  width: 30px; height: 30px;
+  font-size: 18px;
+  border: 2px solid;
+  border-color: #fff #808080 #808080 #fff;
+  background: var(--xp-face);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.ms-face:active { border-color: #808080 #fff #fff #808080; }
+.ms-grid {
+  display: grid;
+  gap: 0;
+  border: 3px solid;
+  border-color: #808080 #fff #fff #808080;
+  width: max-content;
+}
+.ms-cell {
+  width: 22px; height: 22px;
+  border: 2px solid;
+  border-color: #fff #808080 #808080 #fff;
+  background: var(--xp-face);
+  font-family: "Courier New", monospace;
+  font-weight: bold;
+  font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+.ms-cell.revealed {
+  border: 1px solid #a8a498;
+  background: #d8d5c8;
+  cursor: default;
+}
+.ms-cell.mine { background: #d8d5c8; }
+.ms-cell.mine-hit { background: #ff4d4d; }
+.ms-cell[data-n="1"] { color: #0000fe; }
+.ms-cell[data-n="2"] { color: #017e01; }
+.ms-cell[data-n="3"] { color: #fe0000; }
+.ms-cell[data-n="4"] { color: #010081; }
+.ms-cell[data-n="5"] { color: #810102; }
+.ms-cell[data-n="6"] { color: #008081; }
+.ms-cell[data-n="7"] { color: #000; }
+.ms-cell[data-n="8"] { color: #808080; }
+
+/* ---------------- Winamp ---------------- */
+
+.winamp-window { border-radius: 4px; border-color: #333; }
+.winamp-title {
+  background: linear-gradient(to bottom, #4a4a4a, #1c1c1c);
+  padding: 4px 6px;
+  letter-spacing: 1px;
+  text-transform: lowercase;
+}
+.winamp-body {
+  background: #232323;
+  padding: 8px;
+  width: 260px;
+}
+#winamp-viz { display: block; width: 100%; height: 40px; background: #000; margin-bottom: 6px; }
+.winamp-display {
+  background: #0b1a0b;
+  color: #7cff7c;
+  font-family: "Courier New", monospace;
+  padding: 4px 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+  margin-bottom: 8px;
+  border: 1px solid #051005;
+}
+.winamp-marquee { flex: 1; overflow: hidden; white-space: nowrap; position: relative; height: 14px; }
+#winamp-track {
+  position: absolute;
+  white-space: nowrap;
+  animation: marquee 8s linear infinite;
+}
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.winamp-specs { font-size: 9px; opacity: .8; white-space: nowrap; }
+.winamp-controls { display: flex; align-items: center; gap: 4px; }
+.winamp-btn {
+  background: linear-gradient(to bottom, #666, #333);
+  color: #ddd;
+  border: 1px solid #111;
+  border-radius: 2px;
+  width: 28px; height: 22px;
+  cursor: pointer;
+  font-size: 11px;
+}
+.winamp-btn:hover { filter: brightness(1.2); }
+.winamp-toggle.active { background: linear-gradient(to bottom, #2f7d1f, #1c4f13); color: #cfffcf; }
+#winamp-volume { flex: 1; accent-color: #6dc44a; }
+
+/* ---------------- Taskbar ---------------- */
+
+#taskbar {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  background: linear-gradient(to bottom, var(--xp-taskbar-2) 0%, var(--xp-taskbar-1) 50%, var(--xp-taskbar-3) 100%);
+  border-top: 1px solid #7fb3ff;
+  z-index: 1000;
+  padding: 0 4px;
+  gap: 6px;
+}
+
+#start-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 27px;
+  padding: 0 12px 0 6px;
+  background: linear-gradient(to bottom, #7ed957, var(--xp-green-1));
+  border: 1px solid #1c5c0e;
+  border-radius: 4px 8px 8px 4px;
+  color: #fff;
+  font-weight: bold;
+  font-style: italic;
+  font-size: 14px;
+  cursor: pointer;
+  text-shadow: 1px 1px 1px rgba(0,0,0,.4);
+}
+#start-button svg { width: 20px; height: 20px; border-radius: 2px; }
+#start-button:hover { filter: brightness(1.08); }
+#start-button.active { background: linear-gradient(to bottom, #5fae3d, #3f8e1e); }
+
+#taskbar-windows {
+  flex: 1;
+  display: flex;
+  gap: 4px;
+  overflow: hidden;
+  height: 27px;
+}
+.taskbar-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 160px;
+  padding: 0 8px;
+  background: linear-gradient(to bottom, #5590ee, #2f66c9);
+  border: 1px solid #1941a5;
+  border-radius: 3px;
+  color: #fff;
+  font-size: 11px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.taskbar-item svg { width: 14px; height: 14px; flex: none; }
+.taskbar-item.active { background: linear-gradient(to bottom, #1941a5, #123374); box-shadow: inset 1px 1px 3px rgba(0,0,0,.5); }
+
+#system-tray {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 27px;
+  padding: 0 10px;
+  background: linear-gradient(to bottom, #1f57c9, #14408f);
+  border-radius: 8px 0 0 8px;
+  color: #fff;
+  font-size: 11px;
+}
+#tray-winamp {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+}
+#tray-winamp.active { color: #7cff7c; }
+
+/* ---------------- Start menu ---------------- */
+
+#start-menu {
+  position: fixed;
+  bottom: 34px;
+  left: 4px;
+  width: 240px;
+  background: var(--xp-face);
+  border: 1px solid #1c5c0e;
+  border-radius: 8px 8px 4px 4px;
+  box-shadow: 3px 3px 14px rgba(0,0,0,.5);
+  overflow: hidden;
+  z-index: 1001;
+}
+.start-menu-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: linear-gradient(to right, var(--xp-titlebar-1), var(--xp-titlebar-3));
+  color: #fff;
+  font-weight: bold;
+}
+.start-menu-header svg { width: 30px; height: 30px; border-radius: 4px; border: 1px solid #fff; }
+.start-menu-body {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 0;
+}
+.start-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 6px 14px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 12px;
+}
+.start-item svg { width: 20px; height: 20px; flex: none; }
+.start-item:hover { background: linear-gradient(to right, #2f66c9, #5590ee); color: #fff; }
+.start-menu-footer {
+  border-top: 1px solid var(--xp-face-dark);
+  padding: 4px 0;
+}
+
+/* ---------------- Shutdown overlay ---------------- */
+
+#shutdown-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,20,.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+#shutdown-dialog {
+  background: var(--xp-face);
+  border: 1px solid #1450b0;
+  border-radius: 8px;
+  padding: 16px 20px;
+  width: 320px;
+  box-shadow: 4px 6px 20px rgba(0,0,0,.5);
+  text-align: center;
+}
+.shutdown-options { display: flex; justify-content: center; gap: 14px; margin: 14px 0; }
+.shutdown-opt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: 1px solid transparent;
+  padding: 6px;
+  cursor: pointer;
+  width: 80px;
+}
+.shutdown-opt svg { width: 36px; height: 36px; }
+.shutdown-opt:hover { background: #d8e6fb; border: 1px dotted #7aa8e0; }
+.shutdown-buttons { display: flex; justify-content: center; }
+
+#shutdown-screen {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  z-index: 2100;
+  font-size: 16px;
+}
+
+[hidden] { display: none !important; }
+
+/* ---------------- Small screens ---------------- */
+@media (max-width: 640px) {
+  .icons { top: 6px; left: 4px; gap: 2px; }
+  .desktop-icon { width: 72px; }
+  .desktop-icon span { font-size: 10px; }
+  .window { min-width: 90vw !important; max-width: 96vw; }
+  .winamp-body { width: 220px; }
+}
