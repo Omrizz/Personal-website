@@ -52,6 +52,17 @@
     });
   }
 
+  function clampIntoView(win) {
+    if (win.classList.contains("maximized")) return;
+    var rect = win.getBoundingClientRect();
+    var maxLeft = Math.max(0, desktop.clientWidth - Math.min(rect.width, desktop.clientWidth));
+    var maxTop = Math.max(0, desktop.clientHeight - 40);
+    var left = Math.min(Math.max(rect.left, 0), maxLeft);
+    var top = Math.min(Math.max(rect.top, 0), maxTop);
+    win.style.left = left + "px";
+    win.style.top = top + "px";
+  }
+
   function openWindow(id) {
     var win = byId(id);
     if (!win) return;
@@ -59,9 +70,18 @@
     win.classList.remove("minimized");
     ensureTaskbarButton(win);
     bringToFront(win);
+    clampIntoView(win);
     closeStartMenu();
   }
   window.openWindow = openWindow;
+
+  window.addEventListener("resize", function () {
+    windows.forEach(function (win) {
+      if (win.classList.contains("open") && !win.classList.contains("minimized")) {
+        clampIntoView(win);
+      }
+    });
+  });
 
   function closeWindow(id) {
     var win = byId(id);

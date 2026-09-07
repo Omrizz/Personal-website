@@ -66,24 +66,16 @@ svg { display: block; width: 100%; height: 100%; }
     radial-gradient(60px 20px at 45% 26%, rgba(255,255,255,.6), rgba(255,255,255,0) 70%);
 }
 
-.hill {
+.hills {
   position: absolute;
-  left: -10%;
-  width: 120%;
-  height: 46%;
+  left: 0;
   bottom: 0;
-  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  width: 100%;
+  height: 55%;
+  display: block;
 }
-.hill-back {
-  bottom: 6%;
-  height: 38%;
-  background: linear-gradient(to bottom, #6fc24a, #3f9e2e);
-  opacity: .9;
-}
-.hill-front {
-  height: 30%;
-  background: linear-gradient(to bottom, #8fd85f, #4fae34);
-}
+.hill-back { fill: #4fae34; opacity: .85; }
+.hill-front { fill: #59b83a; }
 
 /* ---------------- Desktop icons ---------------- */
 
@@ -218,7 +210,7 @@ svg { display: block; width: 100%; height: 100%; }
 }
 
 /* Project window */
-.project-body h2 { margin: 0 0 4px; }
+.project-body h2 { margin: 0 0 4px; font-size: 15px; font-weight: bold; }
 .status-line { display: flex; align-items: center; gap: 6px; color: #2f7d1f; font-weight: bold; }
 .status-line .dot {
   width: 8px; height: 8px; border-radius: 50%;
@@ -227,6 +219,10 @@ svg { display: block; width: 100%; height: 100%; }
   animation: pulse 1.6s infinite;
 }
 @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) {
+  .status-line .dot { animation: none; }
+  #winamp-track { animation: none; }
+}
 .project-body p { line-height: 1.5; }
 
 .xp-button {
@@ -559,6 +555,31 @@ svg { display: block; width: 100%; height: 100%; }
 }
 
 [hidden] { display: none !important; }
+
+/* ---------------- Focus indicators ----------------
+   Classic Windows used a dotted-rectangle focus ring; reusing that
+   here doubles as an authentic detail and a visible keyboard focus
+   indicator (contrast tuned per background). */
+
+.xp-button:focus-visible,
+.ms-cell:focus-visible,
+.ms-face:focus-visible,
+.start-item:focus-visible,
+.shutdown-opt:focus-visible {
+  outline: 1px dotted #000;
+  outline-offset: -3px;
+}
+.tb-btn:focus-visible,
+#start-button:focus-visible,
+.taskbar-item:focus-visible {
+  outline: 1px dotted #fff;
+  outline-offset: -3px;
+}
+.winamp-btn:focus-visible,
+.winamp-toggle:focus-visible {
+  outline: 1px dotted #7cff7c;
+  outline-offset: 1px;
+}
 
 /* ---------------- Small screens ---------------- */
 @media (max-width: 640px) {

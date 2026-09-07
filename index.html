@@ -69,8 +69,10 @@
 <!-- ============ DESKTOP ============ -->
 <div id="desktop">
   <div class="clouds"></div>
-  <div class="hill hill-back"></div>
-  <div class="hill hill-front"></div>
+  <svg class="hills" viewBox="0 0 1440 500" preserveAspectRatio="none" aria-hidden="true">
+    <path class="hill-back" d="M0,320 C220,230 380,260 560,300 C760,345 900,220 1120,255 C1260,277 1360,255 1440,235 L1440,500 L0,500 Z"/>
+    <path class="hill-front" d="M0,420 C180,340 340,400 520,380 C740,355 860,440 1080,405 C1240,380 1340,420 1440,400 L1440,500 L0,500 Z"/>
+  </svg>
 
   <div class="icons" id="desktop-icons">
     <button class="desktop-icon" data-window="win-about">
@@ -141,7 +143,7 @@ both are on the desktop.</pre>
       automate the bug-creation process end-to-end: creating the
       ticket, extracting the relevant affected areas, and writing
       and executing tests.</p>
-      <a class="xp-button link-button" href="https://github.com/omrizz/agentic-libs" target="_blank" rel="noopener">View on GitHub &rarr;</a>
+      <a class="xp-button link-button" href="https://github.com/omrizz/agentic-libs" target="_blank" rel="noopener">View on GitHub</a>
     </div>
   </div>
 
@@ -215,8 +217,8 @@ both are on the desktop.</pre>
       <canvas id="winamp-viz" width="260" height="40"></canvas>
       <div class="winamp-display">
         <span id="winamp-time">00:00</span>
-        <div class="winamp-marquee"><span id="winamp-track">Omri Vainz -- Untitled Loop.chip &nbsp;&nbsp;&bull;&nbsp;&nbsp; Omri Vainz -- Untitled Loop.chip &nbsp;&nbsp;&bull;&nbsp;&nbsp; </span></div>
-        <span class="winamp-specs">128kbps &bull; 44kHz &bull; stereo</span>
+        <div class="winamp-marquee"><span id="winamp-track">Omri Vainz -- Untitled Loop.chip &nbsp;&nbsp;&nbsp;&nbsp; Omri Vainz -- Untitled Loop.chip &nbsp;&nbsp;&nbsp;&nbsp; </span></div>
+        <span class="winamp-specs">128kbps / 44kHz / stereo</span>
       </div>
       <div class="winamp-controls">
         <button id="winamp-play" class="winamp-btn" title="Play">&#9654;</button>
