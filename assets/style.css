@@ -122,8 +122,11 @@ svg { display: block; width: 100%; height: 100%; }
   position: absolute;
   top: 12px;
   left: 8px;
+  bottom: 12px;
   display: flex;
   flex-direction: column;
+  flex-wrap: wrap;
+  align-content: flex-start;
   gap: 4px;
   z-index: 1;
 }
@@ -249,8 +252,14 @@ svg { display: block; width: 100%; height: 100%; }
 }
 
 /* Project window */
+.project-card + .project-card {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--xp-face-dark);
+}
 .project-body h2 { margin: 0 0 4px; font-size: 15px; font-weight: bold; }
-.status-line { display: flex; align-items: center; gap: 6px; color: #2f7d1f; font-weight: bold; }
+.status-line { display: flex; align-items: center; gap: 6px; color: #2f7d1f; font-weight: bold; margin: 0 0 6px; }
+.status-line.muted-line { color: #666; font-weight: normal; }
 .status-line .dot {
   width: 8px; height: 8px; border-radius: 50%;
   background: #3fbf3f;
@@ -263,6 +272,61 @@ svg { display: block; width: 100%; height: 100%; }
   #winamp-track { animation: none; }
 }
 .project-body p { line-height: 1.5; }
+
+/* Resume window */
+.resume-body { line-height: 1.5; }
+.resume-header { margin-bottom: 10px; }
+.resume-header h2 { margin: 0; font-size: 17px; }
+.resume-role { margin: 1px 0; font-weight: bold; color: #2a5ca8; }
+.resume-contact { margin: 0; font-size: 11px; color: #555; }
+.resume-body h3 {
+  margin: 14px 0 6px;
+  padding-bottom: 3px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: #2a5ca8;
+  border-bottom: 1px solid var(--xp-face-dark);
+}
+.resume-body h3:first-of-type { margin-top: 0; }
+.resume-entry { margin-bottom: 10px; }
+.resume-entry-head { display: flex; justify-content: space-between; gap: 10px; }
+.resume-entry-head span { color: #666; font-size: 11px; white-space: nowrap; }
+.resume-entry-org { color: #555; font-style: italic; margin-bottom: 3px; }
+.resume-entry ul { margin: 4px 0 0; padding-left: 18px; }
+.resume-entry li { margin-bottom: 3px; }
+.resume-plain { margin: 0; }
+.link-inline {
+  font: inherit;
+  color: #2a5ca8;
+  text-decoration: underline;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* Control Panel / Add or Remove Programs window */
+.programs-body { padding: 6px; }
+.programs-list { display: flex; flex-direction: column; }
+.program-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--xp-face-dark);
+}
+.program-item:last-child { border-bottom: none; }
+.program-item svg { width: 26px; height: 26px; flex: none; margin-top: 2px; }
+.program-item b { display: block; }
+.program-item small { display: block; color: #555; line-height: 1.4; }
+.programs-footer {
+  margin-top: 6px;
+  padding: 6px;
+  font-size: 11px;
+  color: #555;
+  border-top: 1px solid var(--xp-face-dark);
+}
 
 .xp-button {
   font-family: inherit;
@@ -636,6 +700,7 @@ svg { display: block; width: 100%; height: 100%; }
 .ms-cell:focus-visible,
 .ms-face:focus-visible,
 .start-item:focus-visible,
+.link-inline:focus-visible,
 .shutdown-opt:focus-visible {
   outline: 1px dotted #000;
   outline-offset: -3px;

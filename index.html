@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Omri Vainz</title>
-<meta name="description" content="Omri Vainz — Software Engineer. A nostalgic Windows XP-style personal desktop.">
+<title>Omri Vainkranz</title>
+<meta name="description" content="Omri Vainkranz — Automation & AI Engineer. A nostalgic Windows XP-style personal desktop.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='2' width='13' height='13' fill='%23f25022'/%3E%3Crect x='17' y='2' width='13' height='13' fill='%237fba00'/%3E%3Crect x='2' y='17' width='13' height='13' fill='%2300a4ef'/%3E%3Crect x='17' y='17' width='13' height='13' fill='%23ffb900'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="assets/style.css">
 </head>
@@ -23,7 +23,7 @@
   </div>
   <div class="boot-bar"><div class="boot-blocks"><i></i><i></i><i></i></div></div>
   <div class="boot-hint">click anywhere to start</div>
-  <div class="boot-foot">Omri Vainz &mdash; Software Engineer</div>
+  <div class="boot-foot">Omri Vainkranz &mdash; Automation &amp; AI Engineer</div>
 </div>
 
 <!-- ============ ICON SPRITE SHEET ============ -->
@@ -80,6 +80,17 @@
     <path d="M14 24V6l14-3v18" stroke="#0a0" stroke-width="2" fill="none"/>
   </symbol>
   <symbol id="icon-close" viewBox="0 0 12 12"><path d="M2 2l8 8M10 2l-8 8" stroke="#fff" stroke-width="1.6"/></symbol>
+  <symbol id="icon-resume" viewBox="0 0 32 32">
+    <path d="M7 3h13l6 6v20a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" fill="#fff" stroke="#7a90b8" stroke-width="1.3"/>
+    <path d="M20 3v6h6" fill="none" stroke="#7a90b8" stroke-width="1.3"/>
+    <circle cx="13.5" cy="13" r="3" fill="#a6c8f0"/>
+    <path d="M9 20.5c0-2.5 2-4.2 4.5-4.2s4.5 1.7 4.5 4.2" fill="none" stroke="#5b7fd6" stroke-width="1.3"/>
+    <path d="M9 24h14M9 27h10" stroke="#c9c2ae" stroke-width="1.2"/>
+  </symbol>
+  <symbol id="icon-settings" viewBox="0 0 32 32">
+    <path d="M16 3l2.1 3.5 3.9-1.1 1.1 3.9 3.9 1.1-1.6 3.6 1.6 3.6-3.9 1.1-1.1 3.9-3.9-1.1L16 29l-2.1-3.5-3.9 1.1-1.1-3.9-3.9-1.1 1.6-3.6L3 14.6l3.9-1.1 1.1-3.9 3.9 1.1L16 3z" fill="#c7cdd6" stroke="#8b93a3" stroke-width="1"/>
+    <circle cx="16" cy="16" r="5.5" fill="#eef1f5" stroke="#8b93a3" stroke-width="1"/>
+  </symbol>
 </svg>
 
 <!-- ============ DESKTOP ============ -->
@@ -94,8 +105,14 @@
     <button class="desktop-icon" data-window="win-about">
       <svg><use href="#icon-user"/></svg><span>About Me</span>
     </button>
+    <button class="desktop-icon" data-window="win-resume">
+      <svg><use href="#icon-resume"/></svg><span>Resume</span>
+    </button>
     <button class="desktop-icon" data-window="win-project">
-      <svg><use href="#icon-code"/></svg><span>agentic-libs</span>
+      <svg><use href="#icon-code"/></svg><span>Projects</span>
+    </button>
+    <button class="desktop-icon" data-window="win-programs">
+      <svg><use href="#icon-settings"/></svg><span>Control Panel</span>
     </button>
     <button class="desktop-icon" data-link="https://github.com/omrizz">
       <svg><use href="#icon-folder"/></svg><span>GitHub</span>
@@ -128,24 +145,28 @@
     </div>
     <div class="menu-bar">File&nbsp;&nbsp;Edit&nbsp;&nbsp;Format&nbsp;&nbsp;View&nbsp;&nbsp;Help</div>
     <div class="window-body notepad-body">
-<pre>Omri Vainz
-Software Engineer
+<pre>Omri Vainkranz
+Automation & AI Engineer
 
-Building tools that make agents (and the humans
-behind them) more productive.
+I build QA automation and AI agent pipelines --
+currently leading Playwright + TypeScript E2E
+testing at Leverate, plus agentic-libs, a 5-agent
+Claude pipeline that turns Jira tickets into
+validated test plans.
 
-Right now I'm working on agentic-libs, a set of
-reusable building blocks for autonomous agents.
+Before that: DevOps (Kubernetes, Terraform) and
+technical support.
 
-Find me on GitHub or drop a line by email --
-both are on the desktop.</pre>
+Full history's on the Resume icon. Find me on
+GitHub or drop a line by email -- both are on
+the desktop.</pre>
     </div>
   </div>
 
-  <div class="window" id="win-project" data-icon="icon-code" style="top:110px;left:170px;width:420px;">
+  <div class="window" id="win-project" data-icon="icon-code" style="top:110px;left:170px;width:440px;">
     <div class="title-bar">
       <svg class="title-icon"><use href="#icon-code"/></svg>
-      <div class="title-bar-text">agentic-libs - Project</div>
+      <div class="title-bar-text">Projects</div>
       <div class="title-bar-controls">
         <button class="tb-btn tb-min" aria-label="Minimize">&#x2013;</button>
         <button class="tb-btn tb-max" aria-label="Maximize">&#x25a1;</button>
@@ -153,13 +174,131 @@ both are on the desktop.</pre>
       </div>
     </div>
     <div class="window-body project-body">
-      <h2>agentic-libs</h2>
-      <p class="status-line"><span class="dot"></span> currently building this</p>
-      <p>A collection of reusable agent building blocks, used to
-      automate the bug-creation process end-to-end: creating the
-      ticket, extracting the relevant affected areas, and writing
-      and executing tests.</p>
-      <a class="xp-button link-button" href="https://github.com/omrizz/agentic-libs" target="_blank" rel="noopener">View on GitHub</a>
+      <div class="project-card">
+        <h2>agentic-libs</h2>
+        <p class="status-line"><span class="dot"></span> currently building this &middot; 2025&ndash;2026</p>
+        <p>A 5-agent Claude AI pipeline that converts Jira tickets into
+        browser-validated QA test plans via Prodini MCP and Playwright
+        MCP -- creating the ticket, extracting the relevant affected
+        areas, and writing and executing tests. Published as a Claude
+        Code plugin.</p>
+        <a class="xp-button link-button" href="https://github.com/omrizz/agentic-libs" target="_blank" rel="noopener">View on GitHub</a>
+      </div>
+      <div class="project-card">
+        <h2>frontend-tests</h2>
+        <p class="status-line muted-line">Enterprise E2E testing framework &middot; 2024&ndash;2025</p>
+        <p>A Playwright + TypeScript E2E framework with a 3-layer
+        architecture, multi-device support, and Jenkins CI/CD, built
+        for a financial trading platform (auth, trading flows, UI
+        persistence across desktop and mobile). Private repository.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="window" id="win-resume" data-icon="icon-resume" style="top:70px;left:130px;width:460px;">
+    <div class="title-bar">
+      <svg class="title-icon"><use href="#icon-resume"/></svg>
+      <div class="title-bar-text">Resume - Omri Vainkranz</div>
+      <div class="title-bar-controls">
+        <button class="tb-btn tb-min" aria-label="Minimize">&#x2013;</button>
+        <button class="tb-btn tb-max" aria-label="Maximize">&#x25a1;</button>
+        <button class="tb-btn tb-close" aria-label="Close"><svg><use href="#icon-close"/></svg></button>
+      </div>
+    </div>
+    <div class="window-body resume-body">
+      <div class="resume-header">
+        <h2>Omri Vainkranz</h2>
+        <p class="resume-role">Automation &amp; AI Engineer</p>
+        <p class="resume-contact">Israel &middot; omrivainz@gmail.com &middot; github.com/omrizz</p>
+      </div>
+
+      <h3>Experience</h3>
+      <div class="resume-entry">
+        <div class="resume-entry-head"><b>QA Automation Engineer</b><span>2024 &ndash; 2026</span></div>
+        <div class="resume-entry-org">Leverate (Lbright Technology Trading Ltd.) &mdash; Israel</div>
+        <ul>
+          <li>Led the design and implementation of an enterprise-grade Playwright + TypeScript E2E testing framework for a financial trading platform, covering authentication, trading flows, and UI persistence across desktop and mobile.</li>
+          <li>Architected a 5-agent Claude AI pipeline (agentic-libs) converting Jira tickets into browser-validated QA test plans via Prodini MCP and Playwright MCP; published as a Claude Code plugin.</li>
+          <li>Managed version control workflows and release lifecycle using GitLab, including branch strategy, semantic versioning, and tag-based release automation.</li>
+          <li>Built and maintained a reusable internal test library (@leveratenew/test-libs) consumed across multiple projects.</li>
+          <li>Implemented multi-environment CI/CD pipelines with Jenkins and cross-env configuration (dev / qa / int / prd).</li>
+        </ul>
+      </div>
+      <div class="resume-entry">
+        <div class="resume-entry-head"><b>DevOps Engineer</b><span>2022 &ndash; 2024</span></div>
+        <div class="resume-entry-org">Octopus Computer Solutions &mdash; Israel</div>
+        <ul>
+          <li>Re-architected and virtualised a data centre for a cyber company, reducing infrastructure costs by 30%.</li>
+          <li>Developed and managed containerised applications using Kubernetes, improving deployment efficiency by 40%.</li>
+          <li>Automated CI/CD pipelines using Terraform and Bash scripting.</li>
+        </ul>
+      </div>
+      <div class="resume-entry">
+        <div class="resume-entry-head"><b>Technical Support Engineer</b> <small>(Student Role)</small><span>2020 &ndash; 2022</span></div>
+        <div class="resume-entry-org">Mend.io &mdash; Israel</div>
+        <ul>
+          <li>Provided Tier 2 technical support, onboarding users and driving platform adoption.</li>
+          <li>Collaborated with R&amp;D on feature requests, bug escalation, and manual QA.</li>
+          <li>Used Salesforce for CRM, Splunk for log research, and SQL for backend troubleshooting.</li>
+        </ul>
+      </div>
+
+      <h3>Education</h3>
+      <div class="resume-entry">
+        <div class="resume-entry-head"><b>BSc in Computer Science</b><span>2018 &ndash; 2021</span></div>
+        <div class="resume-entry-org">Bar Ilan University</div>
+      </div>
+
+      <h3>Military Service</h3>
+      <p class="resume-plain">Combat soldier and officer, Golani Division &mdash; ranked Major; Chief of Operations on reserve duty.</p>
+
+      <h3>Skills</h3>
+      <p class="resume-plain">See <button type="button" class="link-inline" data-window="win-programs">Control Panel &rarr; Add or Remove Programs</button> for the full breakdown.</p>
+    </div>
+  </div>
+
+  <div class="window" id="win-programs" data-icon="icon-settings" style="top:100px;left:300px;width:400px;">
+    <div class="title-bar">
+      <svg class="title-icon"><use href="#icon-settings"/></svg>
+      <div class="title-bar-text">Control Panel - Add or Remove Programs</div>
+      <div class="title-bar-controls">
+        <button class="tb-btn tb-min" aria-label="Minimize">&#x2013;</button>
+        <button class="tb-btn tb-max" aria-label="Maximize">&#x25a1;</button>
+        <button class="tb-btn tb-close" aria-label="Close"><svg><use href="#icon-close"/></svg></button>
+      </div>
+    </div>
+    <div class="window-body programs-body">
+      <div class="programs-list">
+        <div class="program-item">
+          <svg><use href="#icon-code"/></svg>
+          <div><b>Testing &amp; Automation</b><small>Playwright, Page Object Model, API+UI Hybrid Testing, Jenkins CI/CD, Allure Reporting</small></div>
+        </div>
+        <div class="program-item">
+          <svg><use href="#icon-code"/></svg>
+          <div><b>AI &amp; Agentic Systems</b><small>Multi-agent Pipelines, MCP Toolchain (Playwright, Prodini), Prompt Engineering</small></div>
+        </div>
+        <div class="program-item">
+          <svg><use href="#icon-code"/></svg>
+          <div><b>Cloud &amp; Infrastructure</b><small>AWS (Lambda, IAM, CloudFormation, EC2, CloudWatch), Splunk</small></div>
+        </div>
+        <div class="program-item">
+          <svg><use href="#icon-code"/></svg>
+          <div><b>DevOps</b><small>Kubernetes, Docker, Linux, CI/CD Pipelines</small></div>
+        </div>
+        <div class="program-item">
+          <svg><use href="#icon-code"/></svg>
+          <div><b>Programming</b><small>Python, C++, TypeScript, JavaScript, Bash, SQL</small></div>
+        </div>
+        <div class="program-item">
+          <svg><use href="#icon-code"/></svg>
+          <div><b>Operating Systems</b><small>Linux, Windows, Unix</small></div>
+        </div>
+        <div class="program-item">
+          <svg><use href="#icon-code"/></svg>
+          <div><b>Languages</b><small>English (fluent), Hebrew (native)</small></div>
+        </div>
+      </div>
+      <div class="programs-footer">7 programs currently installed</div>
     </div>
   </div>
 
@@ -175,9 +314,9 @@ both are on the desktop.</pre>
     </div>
     <div class="window-body sysinfo-body">
       <table>
-        <tr><td>Registered to:</td><td>Omri Vainz</td></tr>
+        <tr><td>Registered to:</td><td>Omri Vainkranz</td></tr>
         <tr><td>Operating System:</td><td>OmriOS XP</td></tr>
-        <tr><td>Role:</td><td>Software Engineer</td></tr>
+        <tr><td>Role:</td><td>Automation &amp; AI Engineer</td></tr>
         <tr><td>Repository:</td><td>github.com/omrizz</td></tr>
         <tr><td>Uptime:</td><td id="uptime">0s</td></tr>
       </table>
@@ -295,16 +434,18 @@ both are on the desktop.</pre>
 <div id="start-menu" hidden>
   <div class="start-menu-header">
     <svg><use href="#icon-user"/></svg>
-    <span>Omri Vainz</span>
+    <span>Omri Vainkranz</span>
   </div>
   <div class="start-menu-body">
     <div class="start-menu-col start-menu-left">
       <button class="start-item" data-window="win-about"><svg><use href="#icon-user"/></svg>About Me</button>
-      <button class="start-item" data-window="win-project"><svg><use href="#icon-code"/></svg>agentic-libs</button>
+      <button class="start-item" data-window="win-resume"><svg><use href="#icon-resume"/></svg>Resume</button>
+      <button class="start-item" data-window="win-project"><svg><use href="#icon-code"/></svg>Projects</button>
       <button class="start-item" data-window="win-minesweeper"><svg><use href="#icon-mine"/></svg>Minesweeper</button>
       <button class="start-item" data-window="win-winamp"><svg><use href="#icon-note-play"/></svg>Winamp</button>
     </div>
     <div class="start-menu-col start-menu-right">
+      <button class="start-item" data-window="win-programs"><svg><use href="#icon-settings"/></svg>Control Panel</button>
       <button class="start-item" data-window="win-computer"><svg><use href="#icon-computer"/></svg>My Computer</button>
       <button class="start-item" data-window="win-recycle"><svg><use href="#icon-trash"/></svg>Recycle Bin</button>
       <button class="start-item" data-link="https://github.com/omrizz"><svg><use href="#icon-folder"/></svg>GitHub</button>

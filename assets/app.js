@@ -195,25 +195,18 @@
     window.addEventListener("touchend", pointerUp);
   }
 
-  /* ---------------- Desktop icons ---------------- */
+  /* ---------------- Generic [data-window] / [data-link] triggers ----------------
+     Covers desktop icons, Start Menu items, and inline in-window links
+     (e.g. the Resume window's "Control Panel" link) with one handler. */
 
-  document.querySelectorAll(".desktop-icon").forEach(function (icon) {
-    icon.addEventListener("click", function () {
-      var winId = icon.getAttribute("data-window");
-      var link = icon.getAttribute("data-link");
-      if (winId) openWindow(winId);
-      else if (link) window.open(link, link.indexOf("mailto:") === 0 ? "_self" : "_blank");
-    });
-  });
-
-  document.querySelectorAll(".start-item[data-window], .start-item[data-link]").forEach(function (item) {
-    item.addEventListener("click", function () {
-      var winId = item.getAttribute("data-window");
-      var link = item.getAttribute("data-link");
-      if (winId) openWindow(winId);
-      else if (link) window.open(link, link.indexOf("mailto:") === 0 ? "_self" : "_blank");
-      closeStartMenu();
-    });
+  document.addEventListener("click", function (e) {
+    var el = e.target.closest("[data-window], [data-link]");
+    if (!el) return;
+    var winId = el.getAttribute("data-window");
+    var link = el.getAttribute("data-link");
+    if (winId) openWindow(winId);
+    else if (link) window.open(link, link.indexOf("mailto:") === 0 ? "_self" : "_blank");
+    if (el.classList.contains("start-item")) closeStartMenu();
   });
 
   /* ---------------- Start menu ---------------- */
