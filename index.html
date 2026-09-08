@@ -369,24 +369,35 @@ the desktop.</pre>
       </div>
     </div>
     <div class="window-body winamp-body">
-      <canvas id="winamp-viz" width="260" height="40"></canvas>
+      <canvas id="winamp-viz" width="280" height="40"></canvas>
       <div class="winamp-display">
         <div class="winamp-digits" id="winamp-time" aria-label="elapsed time">
           <span data-d="0">0</span><span data-d="1">0</span><b>:</b><span data-d="2">0</span><span data-d="3">0</span>
         </div>
-        <div class="winamp-marquee"><span id="winamp-track">Omri Vainz -- Untitled Loop.chip &nbsp;&nbsp;&nbsp;&nbsp; Omri Vainz -- Untitled Loop.chip &nbsp;&nbsp;&nbsp;&nbsp; </span></div>
-        <span class="winamp-specs">128kbps / 44kHz / stereo</span>
+        <div class="winamp-marquee"><span id="winamp-track">Omri Vainkranz -- Untitled Loop.chip &nbsp;&nbsp;&nbsp;&nbsp; Omri Vainkranz -- Untitled Loop.chip &nbsp;&nbsp;&nbsp;&nbsp; </span></div>
+        <span class="winamp-specs" id="winamp-specs">128kbps / 44kHz / stereo</span>
       </div>
-      <div class="winamp-controls">
+      <div class="winamp-controls winamp-transport">
+        <button id="winamp-prev" class="winamp-btn" title="Previous track">&#9198;</button>
         <button id="winamp-play" class="winamp-btn" title="Play">&#9654;</button>
         <button id="winamp-pause" class="winamp-btn" title="Pause">&#10073;&#10073;</button>
         <button id="winamp-stop" class="winamp-btn" title="Stop">&#9632;</button>
+        <button id="winamp-next" class="winamp-btn" title="Next track">&#9197;</button>
+      </div>
+      <div class="winamp-controls">
         <button id="winamp-shuffle" class="winamp-btn winamp-toggle" title="Shuffle melody">SHUF</button>
         <button id="winamp-repeat" class="winamp-btn winamp-toggle active" title="Repeat">REP</button>
+        <button id="winamp-pl" class="winamp-btn winamp-toggle" title="Playlist">PL</button>
         <input id="winamp-volume" type="range" min="0" max="100" value="60">
       </div>
+      <div class="winamp-playlist" id="winamp-playlist" hidden></div>
     </div>
   </div>
+
+  <!-- Visually hidden host for the YouTube-backed playlist tracks (real
+       songs can't be bundled as audio files, so they're embedded via
+       YouTube's own player and controlled from the Winamp UI). -->
+  <div id="yt-audio-host" aria-hidden="true"></div>
 
   <!-- ============ SHUTDOWN OVERLAY ============ -->
   <div id="shutdown-overlay" hidden>

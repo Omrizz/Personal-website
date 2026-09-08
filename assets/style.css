@@ -441,7 +441,7 @@ svg { display: block; width: 100%; height: 100%; }
 .winamp-body {
   background: #232323;
   padding: 8px;
-  width: 260px;
+  width: 280px;
 }
 #winamp-viz { display: block; width: 100%; height: 40px; background: #000; margin-bottom: 6px; }
 .winamp-display {
@@ -472,7 +472,8 @@ svg { display: block; width: 100%; height: 100%; }
 }
 @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 .winamp-specs { font-size: 9px; opacity: .8; white-space: nowrap; }
-.winamp-controls { display: flex; align-items: center; gap: 4px; }
+.winamp-controls { display: flex; align-items: center; gap: 4px; margin-top: 4px; }
+.winamp-transport { justify-content: center; }
 .winamp-btn {
   background: linear-gradient(to bottom, #666, #333);
   color: #ddd;
@@ -485,6 +486,43 @@ svg { display: block; width: 100%; height: 100%; }
 .winamp-btn:hover { filter: brightness(1.2); }
 .winamp-toggle.active { background: linear-gradient(to bottom, #2f7d1f, #1c4f13); color: #cfffcf; }
 #winamp-volume { flex: 1; accent-color: #6dc44a; }
+
+.winamp-playlist {
+  margin-top: 6px;
+  border: 1px solid #111;
+  background: #0b1a0b;
+  max-height: 110px;
+  overflow-y: auto;
+}
+.winamp-track-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  width: 100%;
+  padding: 4px 6px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #142814;
+  color: #7cff7c;
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+  text-align: left;
+  cursor: pointer;
+}
+.winamp-track-row:last-child { border-bottom: none; }
+.winamp-track-row:hover { background: #142814; }
+.winamp-track-row.active { background: #1c4f13; color: #cfffcf; font-weight: bold; }
+.winamp-track-row .t-num { opacity: .7; flex: none; }
+.winamp-track-row .t-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+#yt-audio-host {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
 
 /* ---------------- Taskbar ---------------- */
 
@@ -712,7 +750,8 @@ svg { display: block; width: 100%; height: 100%; }
   outline-offset: -3px;
 }
 .winamp-btn:focus-visible,
-.winamp-toggle:focus-visible {
+.winamp-toggle:focus-visible,
+.winamp-track-row:focus-visible {
   outline: 1px dotted #7cff7c;
   outline-offset: 1px;
 }
