@@ -295,6 +295,29 @@
   }
   setInterval(updateUptime, 1000);
 
+  /* ---------------- Boot screen ---------------- */
+
+  var bootScreen = document.getElementById("boot");
+  function dismissBoot() {
+    bootScreen.classList.add("fade");
+    var anyOpen = windows.some(function (w) { return w.classList.contains("open"); });
+    if (!anyOpen) openWindow("win-about");
+  }
+  function resetToBoot() {
+    closeStartMenu();
+    windows.forEach(function (win) { closeWindow(win.id); });
+    if (window.winamp) window.winamp.stop();
+    bootScreen.classList.remove("fade");
+  }
+  bootScreen.addEventListener("click", dismissBoot);
+  window.addEventListener("keydown", function () {
+    if (!bootScreen.classList.contains("fade")) dismissBoot();
+  });
+
+  /* ---------------- Log off ---------------- */
+
+  document.getElementById("logoff-button").addEventListener("click", resetToBoot);
+
   /* ---------------- Shutdown sequence ---------------- */
 
   var shutdownButton = document.getElementById("shutdown-button");
@@ -318,35 +341,12 @@
       if (window.winamp) window.winamp.stop();
     } else if (type === "restart") {
       shutdownOverlay.hidden = true;
-      window.location.reload();
+      resetToBoot();
     }
   });
 
   document.getElementById("reboot-btn").addEventListener("click", function () {
     window.location.reload();
-  });
-
-  /* ---------------- Log off ---------------- */
-
-  var logoffButton = document.getElementById("logoff-button");
-  logoffButton.addEventListener("click", function () {
-    closeStartMenu();
-    windows.forEach(function (win) { closeWindow(win.id); });
-    if (window.winamp) window.winamp.stop();
-    bootScreen.classList.remove("fade");
-  });
-
-  /* ---------------- Boot screen ---------------- */
-
-  var bootScreen = document.getElementById("boot");
-  function dismissBoot() {
-    bootScreen.classList.add("fade");
-    var anyOpen = windows.some(function (w) { return w.classList.contains("open"); });
-    if (!anyOpen) openWindow("win-about");
-  }
-  bootScreen.addEventListener("click", dismissBoot);
-  window.addEventListener("keydown", function () {
-    if (!bootScreen.classList.contains("fade")) dismissBoot();
   });
 
   /* ---------------- Open About Me by default ---------------- */
