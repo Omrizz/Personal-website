@@ -10,6 +10,22 @@
 </head>
 <body>
 
+<!-- ============ BOOT SCREEN ============ -->
+<div id="boot">
+  <div class="boot-logo">
+    <div class="boot-flag" aria-hidden="true">
+      <span class="r"></span><span class="g"></span><span class="b"></span><span class="y"></span>
+    </div>
+    <div class="boot-text">
+      <div class="boot-brand">a desktop by</div>
+      <div class="boot-name">Omri<span class="xp">OS</span></div>
+    </div>
+  </div>
+  <div class="boot-bar"><div class="boot-blocks"><i></i><i></i><i></i></div></div>
+  <div class="boot-hint">click anywhere to start</div>
+  <div class="boot-foot">Omri Vainz &mdash; Software Engineer</div>
+</div>
+
 <!-- ============ ICON SPRITE SHEET ============ -->
 <svg style="display:none">
   <symbol id="icon-user" viewBox="0 0 32 32">
@@ -216,7 +232,9 @@ both are on the desktop.</pre>
     <div class="window-body winamp-body">
       <canvas id="winamp-viz" width="260" height="40"></canvas>
       <div class="winamp-display">
-        <span id="winamp-time">00:00</span>
+        <div class="winamp-digits" id="winamp-time" aria-label="elapsed time">
+          <span data-d="0">0</span><span data-d="1">0</span><b>:</b><span data-d="2">0</span><span data-d="3">0</span>
+        </div>
         <div class="winamp-marquee"><span id="winamp-track">Omri Vainz -- Untitled Loop.chip &nbsp;&nbsp;&nbsp;&nbsp; Omri Vainz -- Untitled Loop.chip &nbsp;&nbsp;&nbsp;&nbsp; </span></div>
         <span class="winamp-specs">128kbps / 44kHz / stereo</span>
       </div>
@@ -263,9 +281,12 @@ both are on the desktop.</pre>
     <svg><use href="#icon-flag"/></svg>
     <span>start</span>
   </button>
+  <div id="quicklaunch">
+    <button id="ql-desktop" title="Show Desktop"><svg><use href="#icon-computer"/></svg></button>
+    <button id="ql-winamp" title="Winamp"><svg><use href="#icon-note-play"/></svg></button>
+  </div>
   <div id="taskbar-windows"></div>
   <div id="system-tray">
-    <button id="tray-winamp" title="Winamp">&#9835;</button>
     <span id="tray-clock">00:00 PM</span>
   </div>
 </div>
@@ -277,14 +298,21 @@ both are on the desktop.</pre>
     <span>Omri Vainz</span>
   </div>
   <div class="start-menu-body">
-    <button class="start-item" data-window="win-about"><svg><use href="#icon-user"/></svg>About Me</button>
-    <button class="start-item" data-window="win-project"><svg><use href="#icon-code"/></svg>agentic-libs</button>
-    <button class="start-item" data-window="win-minesweeper"><svg><use href="#icon-mine"/></svg>Minesweeper</button>
-    <button class="start-item" data-window="win-winamp"><svg><use href="#icon-note-play"/></svg>Winamp</button>
-    <button class="start-item" data-link="https://github.com/omrizz"><svg><use href="#icon-folder"/></svg>GitHub</button>
-    <button class="start-item" data-link="mailto:omrivainz@gmail.com"><svg><use href="#icon-mail"/></svg>Email</button>
+    <div class="start-menu-col start-menu-left">
+      <button class="start-item" data-window="win-about"><svg><use href="#icon-user"/></svg>About Me</button>
+      <button class="start-item" data-window="win-project"><svg><use href="#icon-code"/></svg>agentic-libs</button>
+      <button class="start-item" data-window="win-minesweeper"><svg><use href="#icon-mine"/></svg>Minesweeper</button>
+      <button class="start-item" data-window="win-winamp"><svg><use href="#icon-note-play"/></svg>Winamp</button>
+    </div>
+    <div class="start-menu-col start-menu-right">
+      <button class="start-item" data-window="win-computer"><svg><use href="#icon-computer"/></svg>My Computer</button>
+      <button class="start-item" data-window="win-recycle"><svg><use href="#icon-trash"/></svg>Recycle Bin</button>
+      <button class="start-item" data-link="https://github.com/omrizz"><svg><use href="#icon-folder"/></svg>GitHub</button>
+      <button class="start-item" data-link="mailto:omrivainz@gmail.com"><svg><use href="#icon-mail"/></svg>Email</button>
+    </div>
   </div>
   <div class="start-menu-footer">
+    <button id="logoff-button" class="start-item"><svg><use href="#icon-user"/></svg>Log Off</button>
     <button id="shutdown-button" class="start-item"><svg><use href="#icon-computer"/></svg>Turn Off Computer</button>
   </div>
 </div>

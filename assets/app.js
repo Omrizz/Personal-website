@@ -236,15 +236,35 @@
     }
   });
 
-  /* ---------------- Tray winamp toggle ---------------- */
+  /* ---------------- Quicklaunch: Winamp toggle ---------------- */
 
-  var trayWinamp = document.getElementById("tray-winamp");
-  trayWinamp.addEventListener("click", function () {
+  var qlWinamp = document.getElementById("ql-winamp");
+  qlWinamp.addEventListener("click", function () {
     var win = byId("win-winamp");
     if (win.classList.contains("open") && !win.classList.contains("minimized")) {
       minimizeWindow("win-winamp");
     } else {
       openWindow("win-winamp");
+    }
+  });
+
+  /* ---------------- Quicklaunch: Show Desktop ---------------- */
+
+  var qlDesktop = document.getElementById("ql-desktop");
+  var desktopShown = false;
+  var hiddenByShowDesktop = [];
+  qlDesktop.addEventListener("click", function () {
+    if (!desktopShown) {
+      hiddenByShowDesktop = windows.filter(function (w) {
+        return w.classList.contains("open") && !w.classList.contains("minimized");
+      });
+      hiddenByShowDesktop.forEach(function (w) { minimizeWindow(w.id); });
+      desktopShown = true;
+      qlDesktop.classList.add("active");
+    } else {
+      hiddenByShowDesktop.forEach(function (w) { openWindow(w.id); });
+      desktopShown = false;
+      qlDesktop.classList.remove("active");
     }
   });
 
@@ -304,6 +324,29 @@
 
   document.getElementById("reboot-btn").addEventListener("click", function () {
     window.location.reload();
+  });
+
+  /* ---------------- Log off ---------------- */
+
+  var logoffButton = document.getElementById("logoff-button");
+  logoffButton.addEventListener("click", function () {
+    closeStartMenu();
+    windows.forEach(function (win) { closeWindow(win.id); });
+    if (window.winamp) window.winamp.stop();
+    bootScreen.classList.remove("fade");
+  });
+
+  /* ---------------- Boot screen ---------------- */
+
+  var bootScreen = document.getElementById("boot");
+  function dismissBoot() {
+    bootScreen.classList.add("fade");
+    var anyOpen = windows.some(function (w) { return w.classList.contains("open"); });
+    if (!anyOpen) openWindow("win-about");
+  }
+  bootScreen.addEventListener("click", dismissBoot);
+  window.addEventListener("keydown", function () {
+    if (!bootScreen.classList.contains("fade")) dismissBoot();
   });
 
   /* ---------------- Open About Me by default ---------------- */

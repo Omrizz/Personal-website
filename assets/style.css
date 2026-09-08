@@ -44,6 +44,45 @@ button { font-family: inherit; font-size: inherit; }
 
 svg { display: block; width: 100%; height: 100%; }
 
+/* ---------------- Boot screen ---------------- */
+
+#boot {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  background: #000;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity .5s ease;
+}
+#boot.fade { opacity: 0; pointer-events: none; }
+.boot-logo { display: flex; align-items: center; gap: 22px; margin-bottom: 54px; }
+.boot-flag { position: relative; width: 62px; height: 52px; transform: skewY(-8deg); }
+.boot-flag span { position: absolute; width: 28px; height: 23px; border-radius: 5px 3px 3px 5px; }
+.boot-flag .r { left: 0; top: 0; background: #f25022; }
+.boot-flag .g { right: 0; top: 0; background: #7fba00; }
+.boot-flag .b { left: 0; bottom: 0; background: #00a4ef; }
+.boot-flag .y { right: 0; bottom: 0; background: #ffb900; }
+.boot-text { font-family: "Trebuchet MS", Tahoma, sans-serif; }
+.boot-brand { font-size: 13px; letter-spacing: .5px; opacity: .8; }
+.boot-name { font-size: 38px; font-weight: 700; line-height: 1.1; letter-spacing: -.5px; }
+.boot-name .xp { color: #4fce4f; font-weight: 400; }
+.boot-bar { width: 140px; height: 10px; border: 1px solid #333; border-radius: 2px; overflow: hidden; padding: 1px; }
+.boot-blocks { display: flex; gap: 2px; width: 34px; animation: bootslide 1.6s linear infinite; }
+.boot-blocks i { flex: 1; height: 6px; background: linear-gradient(to bottom, #6ea8ff, #2461d8); border-radius: 1px; }
+@keyframes bootslide { 0% { transform: translateX(-40px); } 100% { transform: translateX(140px); } }
+.boot-hint { margin-top: 34px; font-size: 12px; color: #99a; opacity: 0; animation: fadein .6s 1s forwards; }
+@keyframes fadein { to { opacity: 1; } }
+.boot-foot { position: absolute; bottom: 24px; left: 24px; font-size: 11px; color: #777; }
+@media (prefers-reduced-motion: reduce) {
+  .boot-blocks { animation: none; }
+  .boot-hint { animation: none; opacity: 1; }
+}
+
 /* ---------------- Desktop / wallpaper ---------------- */
 
 #desktop {
@@ -353,6 +392,14 @@ svg { display: block; width: 100%; height: 100%; }
   margin-bottom: 8px;
   border: 1px solid #051005;
 }
+.winamp-digits { display: flex; align-items: baseline; gap: 1px; font-size: 15px; font-weight: bold; flex: none; }
+.winamp-digits span {
+  display: inline-block;
+  width: 9px;
+  text-align: center;
+  background: #000;
+}
+.winamp-digits b { font-weight: normal; margin: 0 1px; }
 .winamp-marquee { flex: 1; overflow: hidden; white-space: nowrap; position: relative; height: 14px; }
 #winamp-track {
   position: absolute;
@@ -410,6 +457,26 @@ svg { display: block; width: 100%; height: 100%; }
 #start-button:hover { filter: brightness(1.08); }
 #start-button.active { background: linear-gradient(to bottom, #5fae3d, #3f8e1e); }
 
+#quicklaunch {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 27px;
+  padding: 0 6px;
+  border-right: 1px solid rgba(0,0,0,.25);
+  box-shadow: 1px 0 0 rgba(255,255,255,.2);
+}
+#quicklaunch button {
+  width: 20px; height: 20px;
+  padding: 3px;
+  border: none;
+  border-radius: 2px;
+  background: transparent;
+  cursor: pointer;
+}
+#quicklaunch button:hover { background: rgba(255,255,255,.2); }
+#quicklaunch button.active { background: rgba(0,0,0,.25); }
+
 #taskbar-windows {
   flex: 1;
   display: flex;
@@ -462,7 +529,7 @@ svg { display: block; width: 100%; height: 100%; }
   position: fixed;
   bottom: 34px;
   left: 4px;
-  width: 240px;
+  width: 300px;
   background: var(--xp-face);
   border: 1px solid #1c5c0e;
   border-radius: 8px 8px 4px 4px;
@@ -481,9 +548,18 @@ svg { display: block; width: 100%; height: 100%; }
 }
 .start-menu-header svg { width: 30px; height: 30px; border-radius: 4px; border: 1px solid #fff; }
 .start-menu-body {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 220px;
+}
+.start-menu-left {
   padding: 6px 0;
+  background: #fff;
+  border-right: 1px solid #a9c6f1;
+}
+.start-menu-right {
+  padding: 6px 0;
+  background: #d3e5fa;
 }
 .start-item {
   display: flex;
@@ -498,11 +574,15 @@ svg { display: block; width: 100%; height: 100%; }
   font-size: 12px;
 }
 .start-item svg { width: 20px; height: 20px; flex: none; }
+.start-menu-right .start-item svg { width: 16px; height: 16px; }
+.start-item { white-space: nowrap; }
 .start-item:hover { background: linear-gradient(to right, #2f66c9, #5590ee); color: #fff; }
 .start-menu-footer {
+  display: flex;
   border-top: 1px solid var(--xp-face-dark);
   padding: 4px 0;
 }
+.start-menu-footer .start-item { flex: 1; }
 
 /* ---------------- Shutdown overlay ---------------- */
 

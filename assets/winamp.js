@@ -93,11 +93,14 @@
     timeoutId = setTimeout(scheduleStep, LEAD_STEP * 1000);
   }
 
+  var digitEls = timeEl ? Array.prototype.slice.call(timeEl.querySelectorAll("[data-d]")) : [];
+
   function updateTimeDisplay() {
     var elapsed = elapsedBeforePause + (playing ? (Date.now() - playStartedAt) / 1000 : 0);
-    var m = Math.floor(elapsed / 60);
+    var m = Math.min(99, Math.floor(elapsed / 60));
     var s = Math.floor(elapsed % 60);
-    timeEl.textContent = m + ":" + (s < 10 ? "0" + s : s);
+    var digits = (m < 10 ? "0" + m : "" + m) + (s < 10 ? "0" + s : "" + s);
+    digitEls.forEach(function (el, i) { el.textContent = digits[i]; });
   }
 
   function drawViz() {
