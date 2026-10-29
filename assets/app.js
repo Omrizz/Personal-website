@@ -18,6 +18,29 @@
 
   function byId(id) { return document.getElementById(id); }
 
+  /* Deep links: #resume, #projects, ... open that window on load and the
+     hash follows whichever window was opened last, so the address bar is
+     always a shareable link to what's on screen. */
+  var HASH_TO_WINDOW = {
+    about: "win-about", resume: "win-resume", projects: "win-project",
+    skills: "win-programs", computer: "win-computer", recycle: "win-recycle",
+    minesweeper: "win-minesweeper", circuit: "win-drive", winamp: "win-winamp",
+    games: "win-games", contact: "win-contact"
+  };
+  var WINDOW_TO_HASH = {};
+  Object.keys(HASH_TO_WINDOW).forEach(function (h) { WINDOW_TO_HASH[HASH_TO_WINDOW[h]] = h; });
+
+  function syncHash(winId) {
+    var h = WINDOW_TO_HASH[winId];
+    if (h && window.history && history.replaceState) {
+      try { history.replaceState(null, "", "#" + h); } catch (e) { /* file:// or sandboxed */ }
+    }
+  }
+  function windowFromHash() {
+    var h = (window.location.hash || "").replace(/^#/, "").toLowerCase();
+    return HASH_TO_WINDOW[h] && byId(HASH_TO_WINDOW[h]) ? HASH_TO_WINDOW[h] : null;
+  }
+
   function bringToFront(win) {
     zTop += 1;
     win.style.zIndex = zTop;
@@ -72,8 +95,14 @@
     bringToFront(win);
     clampIntoView(win);
     closeStartMenu();
+    syncHash(id);
   }
   window.openWindow = openWindow;
+
+  window.addEventListener("hashchange", function () {
+    var id = windowFromHash();
+    if (id) openWindow(id);
+  });
 
   window.addEventListener("resize", function () {
     windows.forEach(function (win) {
@@ -342,6 +371,6 @@
     window.location.reload();
   });
 
-  /* ---------------- Open About Me by default ---------------- */
-  openWindow("win-about");
+  /* ---------------- Open the linked window (or About Me) by default ---------------- */
+  openWindow(windowFromHash() || "win-about");
 })();
