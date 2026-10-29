@@ -18,6 +18,7 @@
   var winDrive = document.getElementById("win-drive");
   var resetBtn = document.getElementById("drive-reset");
   var trackSel = document.getElementById("drive-track");
+  var modeSel = document.getElementById("drive-mode");
 
   var TAU = Math.PI * 2;
   var STEP = 1 / 60;
@@ -249,20 +250,28 @@
   var cars, player, phase, countdown, tick, shake;
 
   var COLORS = ["#ff5d8f", "#3fd0ff", "#ffb63f", "#9be15d"];
+  var RIVALS = [
+    { name: "Rex", color: COLORS[1], skill: 0.93, lane: -14 },
+    { name: "Nova", color: COLORS[2], skill: 0.96, lane: 10 },
+    { name: "Pixel", color: COLORS[3], skill: 0.9, lane: -4 }
+  ];
+  var mode = "race";
 
-  function makeCar(slot, color, isPlayer) {
+  function makeCar(slot, color, isPlayer, name) {
     var c = track.center;
     var idx = (track.N - 7 - slot * 6 + track.N) % track.N;
     var off = (slot % 2 ? 1 : -1) * 17;
     var cp = c[idx];
     return {
       isPlayer: isPlayer,
+      name: name,
       color: color,
       x: cp.x + cp.nx * off, y: cp.y + cp.ny * off,
       vx: 0, vy: 0, angle: cp.ang, steer: 0,
       idx: idx, prog: idx - track.N, off: Math.abs(off), lapsDone: 0, lapStart: 0,
       lapTimes: [], finished: false, finishTime: null,
-      speed: 0, slip: 0, braking: false, onRoad: true
+      speed: 0, slip: 0, braking: false, onRoad: true,
+      skill: 1, lane: 0, offTicks: 0, bump: 0
     };
   }
 
@@ -273,8 +282,21 @@
   }
 
   function newRace() {
-    cars = [makeCar(0, COLORS[0], true)];
-    player = cars[0];
+    if (mode === "race") {
+      // player starts 3rd on the grid so there's someone to chase and someone to hold off
+      var order = [RIVALS[1], RIVALS[0], null, RIVALS[2]];
+      cars = order.map(function (r, slot) {
+        if (!r) return makeCar(slot, COLORS[0], true, "You");
+        var car = makeCar(slot, r.color, false, r.name);
+        car.skill = r.skill;
+        car.lane = r.lane;
+        return car;
+      });
+      player = cars[2];
+    } else {
+      cars = [makeCar(0, COLORS[0], true, "You")];
+      player = cars[0];
+    }
     phase = "menu";
     countdown = 0;
     tick = 0;
@@ -345,6 +367,13 @@
     loadTrack(parseInt(trackSel.value, 10));
     newRace();
   });
+  modeSel.addEventListener("change", function () {
+    mode = modeSel.value;
+    newRace();
+  });
+  [trackSel, modeSel].forEach(function (sel) {
+    sel.addEventListener("change", function () { canvas.focus(); });
+  });
 
   function advance() {
     if (phase === "menu") {
@@ -374,6 +403,7 @@
     car.idx = bi;
     car.off = Math.sqrt(best);
     car.onRoad = car.off < TRACK_W / 2 + 6;
+    if (!car.onRoad && phase === "racing") car.offTicks++;
   }
 
   function stepCar(car, ctl) {
@@ -436,8 +466,66 @@
     }
   }
 
+  function score(car) {
+    return car.finished ? 1e7 - car.finishTime : car.prog;
+  }
+
+  function rankOf(car) {
+    var r = 1, sc = score(car);
+    cars.forEach(function (o) { if (o !== car && score(o) > sc) r++; });
+    return r;
+  }
+
+  function aiControls(car) {
+    var c = track.center, N = track.N;
+    var look = Math.round(10 + Math.abs(car.speed) * 3.2);
+    var t = c[(car.idx + look) % N];
+    var tx = t.x + t.nx * car.lane, ty = t.y + t.ny * car.lane;
+    var diff = wrapAngle(Math.atan2(ty - car.y, tx - car.x) - car.angle);
+    var steer = clamp(diff * 2.2, -1, 1);
+
+    var a0 = c[car.idx].ang;
+    var sev = Math.max(
+      Math.abs(wrapAngle(c[(car.idx + 22) % N].ang - a0)),
+      Math.abs(wrapAngle(c[(car.idx + 40) % N].ang - a0)) * 0.7
+    );
+    // rubber band: nudge rivals up when they trail the player, down when well clear
+    var gap = (player.prog - car.prog) / N;
+    var skill = car.skill + clamp(gap * 0.5, -0.07, 0.06);
+    if (car.finished) skill *= 0.55;
+    var target = MAX_SPEED * skill * (1 - clamp(sev * 0.85, 0, 0.5));
+    if (!car.onRoad) target *= 0.7;
+    return {
+      throttle: car.speed < target,
+      brake: car.speed > target + 0.7,
+      steer: steer,
+      hand: false
+    };
+  }
+
+  function collide(a, b) {
+    var dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy);
+    var R = 28;
+    if (d >= R || d === 0) return;
+    var nx = dx / d, ny = dy / d, overlap = (R - d) / 2;
+    a.x -= nx * overlap; a.y -= ny * overlap;
+    b.x += nx * overlap; b.y += ny * overlap;
+    var rv = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny;
+    if (rv < 0) {
+      var j = -(1 + 0.35) * rv / 2;
+      a.vx -= j * nx; a.vy -= j * ny;
+      b.vx += j * nx; b.vy += j * ny;
+      var hit = Math.min(1, -rv / 3);
+      a.bump = Math.max(a.bump || 0, hit);
+      b.bump = Math.max(b.bump || 0, hit);
+    }
+  }
+
+  var autopilot = false;
+
   function playerControls() {
     var racing = phase === "racing";
+    if (autopilot && racing) return aiControls(player);
     return {
       throttle: racing && keys.up,
       brake: racing && keys.down,
@@ -456,10 +544,17 @@
     }
     if (phase === "racing" || phase === "finished" || phase === "countdown" || phase === "menu") {
       cars.forEach(function (car) {
-        var ctl = car.isPlayer ? playerControls() : { throttle: false, brake: false, steer: 0, hand: false };
-        if (phase === "finished" && car.isPlayer) ctl = { throttle: false, brake: true, steer: 0, hand: false };
+        var ctl;
+        if (car.isPlayer) {
+          ctl = phase === "finished" ? { throttle: false, brake: true, steer: 0, hand: false } : playerControls();
+        } else {
+          ctl = phase === "racing" || phase === "finished" ? aiControls(car) : { throttle: false, brake: true, steer: 0, hand: false };
+        }
         stepCar(car, ctl);
       });
+      for (var i = 0; i < cars.length; i++) {
+        for (var j = i + 1; j < cars.length; j++) collide(cars[i], cars[j]);
+      }
     }
     if (phase === "racing") {
       tick++;
@@ -486,6 +581,7 @@
     ctx.save();
     ctx.translate(car.x, car.y);
     ctx.rotate(car.angle);
+    ctx.scale(1.3, 1.3);
     ctx.fillStyle = "rgba(0,0,0,.28)";
     ctx.fillRect(-11, -5, 24, 13);
     // wheels
@@ -550,6 +646,7 @@
     var lap = Math.min(TOTAL_LAPS, player.lapsDone + 1);
     text("LAP " + lap + "/" + TOTAL_LAPS, 10, 16, 14);
     text(fmtTime(phase === "racing" || phase === "finished" ? player.finished ? player.finishTime : tick * STEP : 0), 10, 36, 14, "#ffe066");
+    if (cars.length > 1) text("POS " + rankOf(player) + "/" + cars.length, W - 10, 16, 14, "#fff", "right");
     text(Math.round(Math.abs(player.speed) * 38) + " km/h", 10, H - 14, 14);
   }
 
@@ -566,9 +663,17 @@
     } else if (phase === "finished") {
       ctx.fillStyle = "rgba(20,10,50,.7)";
       ctx.fillRect(0, 0, W, H);
-      text("FINISH!", W / 2, H / 2 - 50, 30, "#ffe066", "center");
-      text("Time " + fmtTime(player.finishTime), W / 2, H / 2 - 12, 15, "#fff", "center");
-      text("Press ENTER or click to race again", W / 2, H / 2 + 30, 13, "#cfe", "center");
+      text(cars.length > 1 ? "RESULTS" : "FINISH!", W / 2, 54, 28, "#ffe066", "center");
+      var order = cars.slice().sort(function (a, b) { return score(b) - score(a); });
+      order.forEach(function (car, i) {
+        var y = 100 + i * 26;
+        var col = car.isPlayer ? "#ffe066" : "#fff";
+        text((i + 1) + ".", W / 2 - 110, y, 15, col, "left");
+        text(car.name, W / 2 - 84, y, 15, col, "left");
+        text(car.finished ? fmtTime(car.finishTime) : "racing\u2026", W / 2 + 110, y, 15, col, "right");
+      });
+      if (cars.length === 1) text("Time " + fmtTime(player.finishTime), W / 2, H / 2, 16, "#fff", "center");
+      text("Press ENTER or click to race again", W / 2, H - 50, 13, "#cfe", "center");
     }
     if (phase !== "menu" && !driveWindowFocused()) {
       ctx.fillStyle = "rgba(0,0,0,.45)";
@@ -616,8 +721,14 @@
   window.sunsetCircuit = {
     step: function (n) { for (var i = 0; i < n; i++) update(); render(); },
     state: function () {
-      return { phase: phase, tick: tick, laps: player.lapsDone, speed: player.speed, onRoad: player.onRoad, prog: player.prog };
+      return {
+        phase: phase, tick: tick, laps: player.lapsDone, speed: player.speed, onRoad: player.onRoad, prog: player.prog,
+        cars: cars.map(function (c) { return { name: c.name, laps: c.lapsDone, prog: c.prog, finished: c.finished, finishTime: c.finishTime, lapTimes: c.lapTimes, offRoadTicks: c.offTicks }; })
+      };
     },
+    start: advance,
+    autopilot: function (on) { autopilot = on; },
+    setMode: function (m) { mode = m; newRace(); },
     keys: keys,
     trackImage: function (i) { loadTrack(i); return tracks[i].ground.toDataURL(); }
   };
