@@ -257,6 +257,10 @@
     { name: "Pixel", color: COLORS[3], skill: 0.9, lane: -4 }
   ];
   var mode = "race";
+  var ghostRec = [];      // flat [x, y, angle*100, ...] every 2nd tick of this run
+  var ghostPlay = null;   // best Time Trial run for this track, replayed as a ghost
+  var banner = null;      // { text, color, ticks } flash after each lap
+  var resultInfo = null;  // { newLap, newTotal } once the player finishes
 
   function makeCar(slot, color, isPlayer, name) {
     var c = track.center;
@@ -282,7 +286,15 @@
     track = tracks[i];
   }
 
+  function bestKey() { return trackIndex + ":" + mode; }
+  function getBest() { return save.best[bestKey()] || null; }
+
   function newRace() {
+    ghostRec = [];
+    banner = null;
+    resultInfo = null;
+    var rec = getBest();
+    ghostPlay = mode === "trial" && rec && rec.ghost && rec.ghost.length > 6 ? rec.ghost : null;
     if (mode === "race") {
       // player starts 3rd on the grid so there's someone to chase and someone to hold off
       var order = [RIVALS[1], RIVALS[0], null, RIVALS[2]];
@@ -588,8 +600,34 @@
         if (car.isPlayer) sfx.finish();
       } else if (car.isPlayer) {
         sfx.lap();
+        var prevBest = getBest();
+        var delta = prevBest && prevBest.lap != null ? lapTime - prevBest.lap : null;
+        banner = {
+          text: "LAP " + laps + "  " + fmtTime(lapTime) + (delta == null ? "" : "  (" + (delta <= 0 ? "-" : "+") + Math.abs(delta).toFixed(2) + ")"),
+          color: delta != null && delta <= 0 ? "#7cff7c" : "#fff",
+          ticks: 150
+        };
       }
     }
+  }
+
+  function recordResult() {
+    var key = bestKey();
+    var rec = save.best[key] || { track: track.name, mode: mode, lap: null, total: null };
+    var bestLap = Math.min.apply(null, player.lapTimes);
+    var newLap = rec.lap == null || bestLap < rec.lap;
+    var newTotal = rec.total == null || player.finishTime < rec.total;
+    if (newLap) rec.lap = bestLap;
+    if (newTotal) {
+      rec.total = player.finishTime;
+      if (mode === "trial") rec.ghost = ghostRec.slice();
+    }
+    rec.track = track.name;
+    rec.mode = mode;
+    save.best[key] = rec;
+    persist();
+    resultInfo = { newLap: newLap, newTotal: newTotal };
+    if (newLap || newTotal) sfx.record();
   }
 
   function score(car) {
@@ -690,7 +728,15 @@
     }
     if (phase === "racing") {
       tick++;
-      if (player.finished) phase = "finished";
+      if (mode === "trial" && tick % 2 === 0) {
+        ghostRec.push(Math.round(player.x), Math.round(player.y), Math.round(wrapAngle(player.angle) * 100));
+      }
+      if (banner && --banner.ticks <= 0) banner = null;
+      if (player.finished) {
+        phase = "finished";
+        banner = null;
+        recordResult();
+      }
     }
   }
 
@@ -709,8 +755,9 @@
 
   /* ---------------- Rendering ---------------- */
 
-  function drawCar(car) {
+  function drawCar(car, alpha) {
     ctx.save();
+    if (alpha != null) ctx.globalAlpha = alpha;
     ctx.translate(car.x, car.y);
     ctx.rotate(car.angle);
     ctx.scale(1.3, 1.3);
@@ -745,6 +792,21 @@
     ctx.restore();
   }
 
+  function drawGhost() {
+    if (!ghostPlay || phase === "menu") return;
+    var gi = Math.max(0, tick) / 2, i0 = Math.floor(gi), f = gi - i0;
+    var n = ghostPlay.length / 3;
+    if (i0 + 1 >= n) return;
+    var a = i0 * 3, b = a + 3;
+    var ang0 = ghostPlay[a + 2] / 100, ang1 = ghostPlay[b + 2] / 100;
+    drawCar({
+      x: lerp(ghostPlay[a], ghostPlay[b], f),
+      y: lerp(ghostPlay[a + 1], ghostPlay[b + 1], f),
+      angle: ang0 + wrapAngle(ang1 - ang0) * f,
+      color: "#cfe8ff", braking: false
+    }, 0.5);
+  }
+
   function drawWorld() {
     var vw = W / cam.zoom, vh = H / cam.zoom;
     var cx = clamp(cam.x, vw / 2, WORLD_W - vw / 2);
@@ -758,7 +820,8 @@
     ctx.translate(-cx, -cy);
 
     ctx.drawImage(track.ground, sx, sy, sw, sh, sx, sy, sw, sh);
-    cars.slice().sort(function (a, b) { return a.y - b.y; }).forEach(drawCar);
+    drawGhost();
+    cars.slice().sort(function (a, b) { return a.y - b.y; }).forEach(function (car) { drawCar(car); });
     ctx.drawImage(track.top, sx, sy, sw, sh, sx, sy, sw, sh);
     ctx.restore();
   }
@@ -779,6 +842,10 @@
     text("LAP " + lap + "/" + TOTAL_LAPS, 10, 16, 14);
     text(fmtTime(phase === "racing" || phase === "finished" ? player.finished ? player.finishTime : tick * STEP : 0), 10, 36, 14, "#ffe066");
     if (cars.length > 1) text("POS " + rankOf(player) + "/" + cars.length, W - 10, 16, 14, "#fff", "right");
+    var rec = getBest();
+    if (rec && rec.lap != null) text("BEST " + fmtTime(rec.lap), 10, 56, 12, "#cfe");
+    if (ghostPlay) text("\u25cf ghost", W - 10, 36, 11, "#cfe8ff", "right");
+    if (banner) text(banner.text, W / 2, 60, 18, banner.color, "center");
     text(Math.round(Math.abs(player.speed) * 38) + " km/h", 10, H - 14, 14);
   }
 
@@ -788,7 +855,11 @@
       ctx.fillRect(0, 0, W, H);
       text("SUNSET CIRCUIT", W / 2, H / 2 - 40, 28, "#ffe066", "center");
       text(track.name + " · " + TOTAL_LAPS + " laps", W / 2, H / 2 - 8, 14, "#fff", "center");
-      text("Press ENTER or click to start", W / 2, H / 2 + 26, 13, "#cfe", "center");
+      var rec = getBest();
+      if (rec) {
+        text("Best lap " + fmtTime(rec.lap) + "  \u00b7  Best " + (mode === "race" ? "race " : "run ") + fmtTime(rec.total), W / 2, H / 2 + 20, 12, "#ffe066", "center");
+      }
+      text("Press ENTER or click to start", W / 2, H / 2 + 50, 13, "#cfe", "center");
     } else if (phase === "countdown") {
       var n = Math.ceil(countdown - 0.2);
       text(n > 0 ? String(n) : "GO!", W / 2, H / 2 - 30, 64, n > 0 ? "#fff" : "#7cff7c", "center");
@@ -796,7 +867,7 @@
       ctx.fillStyle = "rgba(20,10,50,.7)";
       ctx.fillRect(0, 0, W, H);
       text(cars.length > 1 ? "RESULTS" : "FINISH!", W / 2, 54, 28, "#ffe066", "center");
-      var order = cars.slice().sort(function (a, b) { return score(b) - score(a); });
+      var order = cars.length > 1 ? cars.slice().sort(function (a, b) { return score(b) - score(a); }) : [];
       order.forEach(function (car, i) {
         var y = 100 + i * 26;
         var col = car.isPlayer ? "#ffe066" : "#fff";
@@ -804,8 +875,19 @@
         text(car.name, W / 2 - 84, y, 15, col, "left");
         text(car.finished ? fmtTime(car.finishTime) : "racing\u2026", W / 2 + 110, y, 15, col, "right");
       });
-      if (cars.length === 1) text("Time " + fmtTime(player.finishTime), W / 2, H / 2, 16, "#fff", "center");
-      text("Press ENTER or click to race again", W / 2, H - 50, 13, "#cfe", "center");
+      if (cars.length === 1) {
+        text("Time " + fmtTime(player.finishTime), W / 2, 92, 17, "#fff", "center");
+        player.lapTimes.forEach(function (lt, i) {
+          text("Lap " + (i + 1), W / 2 - 70, 130 + i * 22, 14, "#fff", "left");
+          text(fmtTime(lt), W / 2 + 70, 130 + i * 22, 14, "#fff", "right");
+        });
+      }
+      if (resultInfo && (resultInfo.newLap || resultInfo.newTotal)) {
+        text("NEW RECORD" + (resultInfo.newLap && resultInfo.newTotal ? "S" : resultInfo.newLap ? " \u2013 best lap" : " \u2013 best " + (mode === "race" ? "race" : "run")) + "!", W / 2, H - 82, 16, "#7cff7c", "center");
+      }
+      var bestNow = getBest();
+      if (bestNow) text("Best lap " + fmtTime(bestNow.lap) + "  \u00b7  Best " + fmtTime(bestNow.total), W / 2, H - 62, 12, "#ffe066", "center");
+      text("Press ENTER or click to race again", W / 2, H - 38, 13, "#cfe", "center");
     }
     if (phase !== "menu" && !driveWindowFocused()) {
       ctx.fillStyle = "rgba(0,0,0,.45)";
