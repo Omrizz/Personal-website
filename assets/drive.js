@@ -19,6 +19,7 @@
   var resetBtn = document.getElementById("drive-reset");
   var trackSel = document.getElementById("drive-track");
   var modeSel = document.getElementById("drive-mode");
+  var muteBtn = document.getElementById("drive-mute");
 
   var TAU = Math.PI * 2;
   var STEP = 1 / 60;
@@ -328,6 +329,7 @@
 
   window.addEventListener("keydown", function (e) {
     if (!driveWindowFocused()) return;
+    ensureAudio();
     var k = mapKey(e.code);
     if (k) {
       keys[k] = true;
@@ -339,6 +341,8 @@
       advance();
     } else if (e.code === "KeyR") {
       newRace();
+    } else if (e.code === "KeyM") {
+      setMuted(!save.muted);
     }
   });
   window.addEventListener("keyup", function (e) {
@@ -376,6 +380,7 @@
   });
 
   function advance() {
+    ensureAudio();
     if (phase === "menu") {
       phase = "countdown";
       countdown = 3.2;
@@ -385,6 +390,124 @@
       countdown = 3.2;
     }
   }
+
+  /* ---------------- Saved data (mute + records) ---------------- */
+
+  var SAVE_KEY = "sunsetCircuit.v1";
+  var save = { muted: false, best: {} };
+  try {
+    var raw = window.localStorage.getItem(SAVE_KEY);
+    if (raw) {
+      var parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === "object") {
+        save.muted = !!parsed.muted;
+        if (parsed.best && typeof parsed.best === "object") save.best = parsed.best;
+      }
+    }
+  } catch (e) { /* storage unavailable: the game still works, just without memory */ }
+  function persist() {
+    try { window.localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { /* ignore */ }
+  }
+
+  /* ---------------- Sound (Web Audio, all synthesised) ---------------- */
+
+  var audio = null;
+
+  function ensureAudio() {
+    if (audio) {
+      if (audio.ctx.state === "suspended") audio.ctx.resume();
+      return;
+    }
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    var ac = new AC();
+    var a = audio = { ctx: ac };
+    a.master = ac.createGain();
+    a.master.gain.value = save.muted ? 0 : 0.5;
+    a.master.connect(ac.destination);
+
+    a.o1 = ac.createOscillator(); a.o1.type = "sawtooth";
+    a.o2 = ac.createOscillator(); a.o2.type = "square";
+    a.lp = ac.createBiquadFilter(); a.lp.type = "lowpass"; a.lp.frequency.value = 400;
+    a.eg = ac.createGain(); a.eg.gain.value = 0;
+    var mix2 = ac.createGain(); mix2.gain.value = 0.5;
+    a.o1.connect(a.lp); a.o2.connect(mix2); mix2.connect(a.lp);
+    a.lp.connect(a.eg); a.eg.connect(a.master);
+    a.o1.start(); a.o2.start();
+
+    var buf = ac.createBuffer(1, ac.sampleRate, ac.sampleRate);
+    var data = buf.getChannelData(0);
+    for (var i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+    a.noise = buf;
+    var ns = ac.createBufferSource(); ns.buffer = buf; ns.loop = true;
+    a.bp = ac.createBiquadFilter(); a.bp.type = "bandpass"; a.bp.frequency.value = 1600; a.bp.Q.value = 1.2;
+    a.sg = ac.createGain(); a.sg.gain.value = 0;
+    ns.connect(a.bp); a.bp.connect(a.sg); a.sg.connect(a.master);
+    ns.start();
+  }
+
+  function beep(freq, dur, type, vol, delay) {
+    if (!audio || save.muted) return;
+    var ac = audio.ctx, t0 = ac.currentTime + (delay || 0);
+    var o = ac.createOscillator(), g = ac.createGain();
+    o.type = type || "square";
+    o.frequency.setValueAtTime(freq, t0);
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(vol || 0.2, t0 + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.connect(g); g.connect(audio.master);
+    o.start(t0); o.stop(t0 + dur + 0.02);
+  }
+
+  function thump(intensity) {
+    if (!audio || save.muted) return;
+    var ac = audio.ctx, t0 = ac.currentTime;
+    var src = ac.createBufferSource(); src.buffer = audio.noise;
+    var lp = ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 500 + intensity * 900;
+    var g = ac.createGain();
+    g.gain.setValueAtTime(0.1 + intensity * 0.35, t0);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.22);
+    src.connect(lp); lp.connect(g); g.connect(audio.master);
+    src.start(t0, Math.random() * 0.5, 0.25);
+  }
+
+  var sfx = {
+    tick: function () { beep(440, 0.14, "square", 0.18); },
+    go: function () { beep(880, 0.45, "square", 0.22); },
+    lap: function () { beep(660, 0.12, "triangle", 0.25); beep(990, 0.18, "triangle", 0.25, 0.1); },
+    record: function () { [660, 880, 1100, 1320].forEach(function (f, i) { beep(f, 0.16, "triangle", 0.25, i * 0.09); }); },
+    finish: function () { [523, 659, 784, 1047].forEach(function (f, i) { beep(f, 0.22, "square", 0.18, i * 0.12); }); },
+    bump: thump
+  };
+
+  function audioFrame(active) {
+    if (!audio) return;
+    var a = audio, t = a.ctx.currentTime;
+    var sp = clamp(Math.abs(player.speed) / MAX_SPEED, 0, 1);
+    var gas = keys.up && (phase === "racing" || phase === "countdown");
+    var freq = 52 + sp * 175 + (gas ? 14 : 0);
+    a.o1.frequency.setTargetAtTime(freq, t, 0.05);
+    a.o2.frequency.setTargetAtTime(freq * 0.5, t, 0.05);
+    a.lp.frequency.setTargetAtTime(320 + sp * 900 + (gas ? 260 : 0), t, 0.06);
+    a.eg.gain.setTargetAtTime(active ? 0.05 + sp * 0.05 + (gas ? 0.035 : 0) : 0, t, 0.08);
+
+    var slide = clamp((Math.abs(player.slip) - 0.9) / 1.8, 0, 1);
+    if (keys.hand && phase === "racing" && player.speed > 1.5) slide = Math.max(slide, 0.45);
+    if (!player.onRoad) slide = Math.max(slide, sp * 0.35);
+    a.sg.gain.setTargetAtTime(active ? slide * 0.16 : 0, t, 0.04);
+    a.bp.frequency.setTargetAtTime(player.onRoad ? 1500 + sp * 700 : 700, t, 0.1);
+  }
+
+  function setMuted(m) {
+    save.muted = m;
+    muteBtn.textContent = m ? "\u{1F507}" : "\u{1F50A}";
+    muteBtn.setAttribute("aria-pressed", m ? "true" : "false");
+    muteBtn.title = (m ? "Unmute" : "Mute") + " (M)";
+    if (audio) audio.master.gain.setTargetAtTime(m ? 0 : 0.5, audio.ctx.currentTime, 0.03);
+    persist();
+  }
+  muteBtn.addEventListener("click", function () { ensureAudio(); setMuted(!save.muted); });
+  setMuted(save.muted);
 
   /* ---------------- Simulation ---------------- */
 
@@ -462,6 +585,9 @@
       if (laps >= TOTAL_LAPS && !car.finished) {
         car.finished = true;
         car.finishTime = tick * STEP;
+        if (car.isPlayer) sfx.finish();
+      } else if (car.isPlayer) {
+        sfx.lap();
       }
     }
   }
@@ -536,7 +662,11 @@
 
   function update() {
     if (phase === "countdown") {
+      var before = Math.ceil(countdown - 0.2);
       countdown -= STEP;
+      var after = Math.ceil(countdown - 0.2);
+      if (after !== before && after > 0) sfx.tick();
+      if (before > 0 && after <= 0) sfx.go();
       if (countdown <= 0) {
         phase = "racing";
         tick = 0;
@@ -555,6 +685,8 @@
       for (var i = 0; i < cars.length; i++) {
         for (var j = i + 1; j < cars.length; j++) collide(cars[i], cars[j]);
       }
+      if (player.bump > 0.12) sfx.bump(player.bump);
+      cars.forEach(function (c) { c.bump = 0; });
     }
     if (phase === "racing") {
       tick++;
@@ -695,7 +827,7 @@
 
   function frame(ts) {
     requestAnimationFrame(frame);
-    if (!driveWindowOpen()) { last = 0; return; }
+    if (!driveWindowOpen()) { last = 0; audioFrame(false); return; }
     if (!last) last = ts;
     acc += Math.min(0.1, (ts - last) / 1000);
     last = ts;
@@ -705,6 +837,7 @@
       acc -= STEP;
     }
     render();
+    audioFrame(running && phase !== "menu");
   }
 
   TRACK_DEFS.forEach(function (def, i) {
