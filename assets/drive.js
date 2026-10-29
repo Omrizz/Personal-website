@@ -20,6 +20,7 @@
   var trackSel = document.getElementById("drive-track");
   var modeSel = document.getElementById("drive-mode");
   var muteBtn = document.getElementById("drive-mute");
+  var diffSel = document.getElementById("drive-diff");
 
   var TOUCH = !!(window.matchMedia && window.matchMedia("(hover: none) and (pointer: coarse)").matches);
   var START_PROMPT = TOUCH ? "Tap the screen to start" : "Press ENTER or click to start";
@@ -75,9 +76,18 @@
       name: "Neon Hairpin",
       seed: 29,
       points: [
-        [350, 200], [700, 130], [1050, 230], [1400, 150], [1650, 350],
+        [700, 130], [1050, 230], [1400, 150], [1650, 350],
         [1600, 700], [1450, 1000], [1100, 1050], [850, 900], [900, 700],
-        [650, 600], [350, 700], [250, 450]
+        [650, 600], [350, 700], [250, 450], [350, 200]
+      ]
+    },
+    {
+      name: "Harbor Hairpins",
+      seed: 47,
+      points: [
+        [700, 180], [1100, 260], [1450, 180], [1650, 420],
+        [1450, 620], [1550, 880], [1250, 1040], [950, 880], [750, 1050],
+        [450, 950], [300, 700], [550, 520], [300, 420], [300, 250]
       ]
     }
   ];
@@ -262,6 +272,7 @@
     { name: "Pixel", color: COLORS[3], skill: 0.9, lane: -4 }
   ];
   var mode = "race";
+  var DIFF_OFFSET = { easy: -0.07, normal: 0, hard: 0.05 };
   var ghostRec = [];      // flat [x, y, angle*100, ...] every 2nd tick of this run
   var ghostPlay = null;   // best Time Trial run for this track, replayed as a ghost
   var banner = null;      // { text, color, ticks } flash after each lap
@@ -393,7 +404,7 @@
     mode = modeSel.value;
     newRace();
   });
-  [trackSel, modeSel].forEach(function (sel) {
+  [trackSel, modeSel, diffSel].forEach(function (sel) {
     sel.addEventListener("change", function () { canvas.focus(); });
   });
 
@@ -412,13 +423,14 @@
   /* ---------------- Saved data (mute + records) ---------------- */
 
   var SAVE_KEY = "sunsetCircuit.v1";
-  var save = { muted: false, best: {} };
+  var save = { muted: false, diff: "normal", best: {} };
   try {
     var raw = window.localStorage.getItem(SAVE_KEY);
     if (raw) {
       var parsed = JSON.parse(raw);
       if (parsed && typeof parsed === "object") {
         save.muted = !!parsed.muted;
+        if (parsed.diff === "easy" || parsed.diff === "hard") save.diff = parsed.diff;
         if (parsed.best && typeof parsed.best === "object") save.best = parsed.best;
       }
     }
@@ -526,6 +538,13 @@
   }
   muteBtn.addEventListener("click", function () { ensureAudio(); setMuted(!save.muted); });
   setMuted(save.muted);
+
+  diffSel.value = save.diff;
+  diffSel.addEventListener("change", function () {
+    save.diff = diffSel.value;
+    persist();
+    newRace();
+  });
 
   /* ---------------- Effects: tyre marks, smoke, sparks ---------------- */
 
@@ -748,7 +767,7 @@
     );
     // rubber band: nudge rivals up when they trail the player, down when well clear
     var gap = (player.prog - car.prog) / N;
-    var skill = car.skill + clamp(gap * 0.5, -0.07, 0.06);
+    var skill = car.skill + DIFF_OFFSET[save.diff] + clamp(gap * 0.5, -0.07, 0.06);
     if (car.finished) skill *= 0.55;
     var target = MAX_SPEED * skill * (1 - clamp(sev * 0.85, 0, 0.5));
     if (!car.onRoad) target *= 0.7;
