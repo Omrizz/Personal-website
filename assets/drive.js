@@ -998,19 +998,45 @@
     ctx.restore();
   }
 
-  function drawGhost() {
-    if (!ghostPlay || phase === "menu") return;
+  function ghostPose() {
+    if (!ghostPlay || phase === "menu") return null;
     var gi = Math.max(0, tick) / 2, i0 = Math.floor(gi), f = gi - i0;
     var n = ghostPlay.length / 3;
-    if (i0 + 1 >= n) return;
+    if (i0 + 1 >= n) return null;
     var a = i0 * 3, b = a + 3;
     var ang0 = ghostPlay[a + 2] / 100, ang1 = ghostPlay[b + 2] / 100;
-    drawCar({
+    return {
       x: lerp(ghostPlay[a], ghostPlay[b], f),
       y: lerp(ghostPlay[a + 1], ghostPlay[b + 1], f),
       angle: ang0 + wrapAngle(ang1 - ang0) * f,
       color: "#cfe8ff", braking: false
-    }, 0.5);
+    };
+  }
+
+  function drawGhost() {
+    var g = ghostPose();
+    if (g) drawCar(g, 0.5);
+  }
+
+  // When the ghost is off-screen, point at it from the edge of the view.
+  function drawGhostArrow() {
+    var g = ghostPose();
+    if (!g || phase === "finished") return;
+    var dx = (g.x - cam.x) * cam.zoom, dy = (g.y - cam.y) * cam.zoom;
+    if (Math.abs(dx) < W / 2 - 12 && Math.abs(dy) < H / 2 - 12) return;
+    var k = Math.min((W / 2 - 22) / Math.abs(dx || 1e-6), (H / 2 - 22) / Math.abs(dy || 1e-6));
+    var ax = W / 2 + dx * k, ay = H / 2 + dy * k;
+    ctx.save();
+    ctx.translate(ax, ay);
+    ctx.rotate(Math.atan2(dy, dx));
+    ctx.fillStyle = "rgba(207,232,255,.85)";
+    ctx.strokeStyle = "rgba(0,0,0,.5)";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(10, 0); ctx.lineTo(-7, -8); ctx.lineTo(-3, 0); ctx.lineTo(-7, 8);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    ctx.restore();
   }
 
   function drawWorld() {
@@ -1062,6 +1088,7 @@
   function drawHud() {
     if (phase === "menu") return;
     drawMinimap();
+    drawGhostArrow();
     var lap = Math.min(TOTAL_LAPS, player.lapsDone + 1);
     text("LAP " + lap + "/" + TOTAL_LAPS, 10, 16, 14);
     text(fmtTime(phase === "racing" || phase === "finished" ? player.finished ? player.finishTime : tick * STEP : 0), 10, 36, 14, "#ffe066");
