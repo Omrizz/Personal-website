@@ -21,6 +21,10 @@
   var modeSel = document.getElementById("drive-mode");
   var muteBtn = document.getElementById("drive-mute");
 
+  var TOUCH = !!(window.matchMedia && window.matchMedia("(hover: none) and (pointer: coarse)").matches);
+  var START_PROMPT = TOUCH ? "Tap the screen to start" : "Press ENTER or click to start";
+  var AGAIN_PROMPT = TOUCH ? "Tap the screen to race again" : "Press ENTER or click to race again";
+
   var TAU = Math.PI * 2;
   var STEP = 1 / 60;
   var WORLD_W = 1800, WORLD_H = 1200;
@@ -859,7 +863,7 @@
       if (rec) {
         text("Best lap " + fmtTime(rec.lap) + "  \u00b7  Best " + (mode === "race" ? "race " : "run ") + fmtTime(rec.total), W / 2, H / 2 + 20, 12, "#ffe066", "center");
       }
-      text("Press ENTER or click to start", W / 2, H / 2 + 50, 13, "#cfe", "center");
+      text(START_PROMPT, W / 2, H / 2 + 50, 13, "#cfe", "center");
     } else if (phase === "countdown") {
       var n = Math.ceil(countdown - 0.2);
       text(n > 0 ? String(n) : "GO!", W / 2, H / 2 - 30, 64, n > 0 ? "#fff" : "#7cff7c", "center");
@@ -887,7 +891,7 @@
       }
       var bestNow = getBest();
       if (bestNow) text("Best lap " + fmtTime(bestNow.lap) + "  \u00b7  Best " + fmtTime(bestNow.total), W / 2, H - 62, 12, "#ffe066", "center");
-      text("Press ENTER or click to race again", W / 2, H - 38, 13, "#cfe", "center");
+      text(AGAIN_PROMPT, W / 2, H - 38, 13, "#cfe", "center");
     }
     if (phase !== "menu" && !driveWindowFocused()) {
       ctx.fillStyle = "rgba(0,0,0,.45)";
