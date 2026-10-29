@@ -519,7 +519,7 @@
     if (!audio) return;
     var a = audio, t = a.ctx.currentTime;
     var sp = clamp(Math.abs(player.speed) / MAX_SPEED, 0, 1);
-    var gas = keys.up && (phase === "racing" || phase === "countdown");
+    var gas = (keys.up || pad.up) && (phase === "racing" || phase === "countdown");
     var freq = 52 + sp * 175 + (gas ? 14 : 0);
     a.o1.frequency.setTargetAtTime(freq, t, 0.05);
     a.o2.frequency.setTargetAtTime(freq * 0.5, t, 0.05);
@@ -527,7 +527,7 @@
     a.eg.gain.setTargetAtTime(active ? 0.05 + sp * 0.05 + (gas ? 0.035 : 0) : 0, t, 0.08);
 
     var slide = clamp((Math.abs(player.slip) - 0.9) / 1.8, 0, 1);
-    if (keys.hand && phase === "racing" && player.speed > 1.5) slide = Math.max(slide, 0.45);
+    if ((keys.hand || pad.hand) && phase === "racing" && player.speed > 1.5) slide = Math.max(slide, 0.45);
     if (!player.onRoad) slide = Math.max(slide, sp * 0.35);
     a.sg.gain.setTargetAtTime(active ? slide * 0.16 : 0, t, 0.04);
     a.bp.frequency.setTargetAtTime(player.onRoad ? 1500 + sp * 700 : 700, t, 0.1);
@@ -635,6 +635,41 @@
     g.fillStyle = "#ff5d8f";
     g.beginPath(); g.arc(c0.x, c0.y, 55, 0, TAU); g.fill();
     t.minimap = c;
+  }
+
+  /* ---------------- Gamepad (optional) ---------------- */
+
+  var pad = { connected: false, steer: 0, up: false, down: false, hand: false };
+  var padPrev = {};
+
+  function padPressed(gp, i) { return !!(gp.buttons[i] && gp.buttons[i].pressed); }
+  function padEdge(name, now) {
+    var fired = now && !padPrev[name];
+    padPrev[name] = now;
+    return fired;
+  }
+
+  function pollPad() {
+    var list = navigator.getGamepads ? navigator.getGamepads() : [];
+    var gp = null;
+    for (var i = 0; i < list.length; i++) {
+      if (list[i] && list[i].connected) { gp = list[i]; break; }
+    }
+    pad.connected = !!gp;
+    if (!gp || !driveWindowFocused()) {
+      pad.steer = 0; pad.up = pad.down = pad.hand = false;
+      return;
+    }
+    var ax = gp.axes[0] || 0;
+    if (Math.abs(ax) < 0.15) ax = 0;
+    pad.steer = padPressed(gp, 14) ? -1 : padPressed(gp, 15) ? 1 : clamp(ax, -1, 1);
+    pad.up = padPressed(gp, 7) || padPressed(gp, 0) || padPressed(gp, 12);
+    pad.down = padPressed(gp, 6) || padPressed(gp, 1) || padPressed(gp, 13);
+    pad.hand = padPressed(gp, 2) || padPressed(gp, 5);
+
+    if (padEdge("start", padPressed(gp, 9) || ((phase === "menu" || phase === "finished") && padPressed(gp, 0)))) advance();
+    if (padEdge("recover", padPressed(gp, 3))) recover();
+    if (padEdge("restart", padPressed(gp, 8))) newRace();
   }
 
   /* ---------------- Simulation ---------------- */
@@ -852,11 +887,12 @@
   function playerControls() {
     var racing = phase === "racing";
     if (autopilot && racing) return aiControls(player);
+    var keySteer = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
     return {
-      throttle: racing && keys.up,
-      brake: racing && keys.down,
-      steer: (keys.right ? 1 : 0) - (keys.left ? 1 : 0),
-      hand: racing && keys.hand
+      throttle: racing && (keys.up || pad.up),
+      brake: racing && (keys.down || pad.down),
+      steer: keySteer !== 0 ? keySteer : pad.steer,
+      hand: racing && (keys.hand || pad.hand)
     };
   }
 
@@ -1053,6 +1089,7 @@
         text("Best lap " + fmtTime(rec.lap) + "  \u00b7  Best " + (mode === "race" ? "race " : "run ") + fmtTime(rec.total), W / 2, H / 2 + 20, 12, "#ffe066", "center");
       }
       text(START_PROMPT, W / 2, H / 2 + 50, 13, "#cfe", "center");
+      if (pad.connected) text("\u{1F3AE} Gamepad connected \u2013 stick steers, RT gas, LT brake, X handbrake", W / 2, H / 2 + 74, 11, "#8fd9ff", "center");
     } else if (phase === "countdown") {
       var n = Math.ceil(countdown - 0.2);
       text(n > 0 ? String(n) : "GO!", W / 2, H / 2 - 30, 64, n > 0 ? "#fff" : "#7cff7c", "center");
@@ -1106,6 +1143,7 @@
     if (!last) last = ts;
     acc += Math.min(0.1, (ts - last) / 1000);
     last = ts;
+    pollPad();
     var running = driveWindowFocused() || phase === "menu";
     while (acc >= STEP) {
       if (running) update();
