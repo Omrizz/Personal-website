@@ -79,6 +79,11 @@
     <circle cx="24" cy="21" r="4" fill="#0a0"/>
     <path d="M14 24V6l14-3v18" stroke="#0a0" stroke-width="2" fill="none"/>
   </symbol>
+  <symbol id="icon-games" viewBox="0 0 32 32">
+    <rect x="3" y="9" width="26" height="15" rx="7" fill="#7b5cff" stroke="#3b2a96" stroke-width="1.3"/>
+    <path d="M9 13v7M5.5 16.5h7" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+    <circle cx="21" cy="14.5" r="1.9" fill="#ffe066"/><circle cx="25" cy="18.5" r="1.9" fill="#ff6ec7"/>
+  </symbol>
   <symbol id="icon-close" viewBox="0 0 12 12"><path d="M2 2l8 8M10 2l-8 8" stroke="#fff" stroke-width="1.6"/></symbol>
   <symbol id="icon-resume" viewBox="0 0 32 32">
     <path d="M7 3h13l6 6v20a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" fill="#fff" stroke="#7a90b8" stroke-width="1.3"/>
@@ -128,6 +133,9 @@
     </button>
     <button class="desktop-icon" data-link="mailto:omrivainz@gmail.com">
       <svg><use href="#icon-mail"/></svg><span>Email</span>
+    </button>
+    <button class="desktop-icon" data-window="win-games">
+      <svg><use href="#icon-games"/></svg><span>Games</span>
     </button>
     <button class="desktop-icon" data-window="win-minesweeper">
       <svg><use href="#icon-mine"/></svg><span>Minesweeper</span>
@@ -411,6 +419,46 @@ the desktop.</pre>
     </div>
   </div>
 
+  <div class="window" id="win-games" data-icon="icon-games" style="top:80px;left:200px;width:480px;">
+    <div class="title-bar">
+      <svg class="title-icon"><use href="#icon-games"/></svg>
+      <div class="title-bar-text">Games</div>
+      <div class="title-bar-controls">
+        <button class="tb-btn tb-min" aria-label="Minimize">&#x2013;</button>
+        <button class="tb-btn tb-max" aria-label="Maximize">&#x25a1;</button>
+        <button class="tb-btn tb-close" aria-label="Close"><svg><use href="#icon-close"/></svg></button>
+      </div>
+    </div>
+    <div class="menu-bar">File&nbsp;&nbsp;Edit&nbsp;&nbsp;View&nbsp;&nbsp;Favorites&nbsp;&nbsp;Tools&nbsp;&nbsp;Help</div>
+    <div class="address-bar"><span>Address</span><div>C:\Games</div></div>
+    <div class="window-body explorer-body">
+      <div class="explorer-tasks">
+        <div class="task-group">
+          <h4>Play</h4>
+          <button type="button" class="task-link" data-window="win-drive">Sunset Circuit</button>
+          <button type="button" class="task-link" data-window="win-minesweeper">Minesweeper</button>
+          <button type="button" class="task-link" data-window="win-winamp">Open Winamp</button>
+        </div>
+        <div class="task-group">
+          <h4>Details</h4>
+          <p>2 games<br>Built from scratch<br>No downloads, no ads</p>
+        </div>
+      </div>
+      <div class="explorer-main">
+        <div class="explorer-files">
+          <button type="button" class="file-item" data-window="win-drive">
+            <svg><use href="#icon-car"/></svg><b>Sunset Circuit</b><small>Racing game &middot; 2 tracks, rivals, lap records</small>
+          </button>
+          <button type="button" class="file-item" data-window="win-minesweeper">
+            <svg><use href="#icon-mine"/></svg><b>Minesweeper</b><small>Classic puzzle &middot; 9&times;9, 10 mines</small>
+          </button>
+        </div>
+        <h3 class="records-title">Personal records</h3>
+        <div id="games-records" class="records" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+
   <div class="window" id="win-minesweeper" data-icon="icon-mine" style="top:120px;left:420px;width:auto;">
     <div class="title-bar">
       <svg class="title-icon"><use href="#icon-mine"/></svg>
@@ -554,6 +602,7 @@ the desktop.</pre>
       <button class="start-item" data-window="win-about"><svg><use href="#icon-user"/></svg>About Me</button>
       <button class="start-item" data-window="win-resume"><svg><use href="#icon-resume"/></svg>Resume</button>
       <button class="start-item" data-window="win-project"><svg><use href="#icon-code"/></svg>Projects</button>
+      <button class="start-item" data-window="win-games"><svg><use href="#icon-games"/></svg>Games</button>
       <button class="start-item" data-window="win-minesweeper"><svg><use href="#icon-mine"/></svg>Minesweeper</button>
       <button class="start-item" data-window="win-drive"><svg><use href="#icon-car"/></svg>Sunset Circuit</button>
       <button class="start-item" data-window="win-winamp"><svg><use href="#icon-note-play"/></svg>Winamp</button>
@@ -576,5 +625,6 @@ the desktop.</pre>
 <script src="assets/minesweeper.js"></script>
 <script src="assets/winamp.js"></script>
 <script src="assets/drive.js"></script>
+<script src="assets/records.js"></script>
 </body>
 </html>

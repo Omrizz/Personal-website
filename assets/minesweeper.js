@@ -139,12 +139,20 @@
     faceBtn.textContent = "\u{1F635}";
   }
 
+  function saveBestTime(secs) {
+    try {
+      var prev = parseInt(window.localStorage.getItem("omrios.minesweeper.best"), 10);
+      if (!prev || secs < prev) window.localStorage.setItem("omrios.minesweeper.best", String(secs));
+    } catch (e) { /* storage unavailable */ }
+  }
+
   function checkWin() {
     if (over) return;
     if (revealedCount === ROWS * COLS - MINES) {
       over = true;
       stopTimer();
       faceBtn.textContent = "\u{1F60E}";
+      saveBestTime(seconds);
       cells.forEach(function (cell, i) {
         if (cell.mine && !cell.flagged) {
           cell.flagged = true;

@@ -516,6 +516,86 @@ svg { display: block; width: 100%; height: 100%; }
   .drive-touch { display: flex; }
 }
 
+/* ---------------- Games folder (Explorer-style) ---------------- */
+
+.address-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 8px;
+  background: var(--xp-face);
+  border-bottom: 1px solid var(--xp-face-dark);
+  font-size: 11px;
+}
+.address-bar div {
+  flex: 1;
+  padding: 2px 6px;
+  background: #fff;
+  border: 1px solid #7f9db9;
+}
+.explorer-body { display: flex; padding: 0; background: #fff; min-height: 230px; }
+.explorer-tasks {
+  flex: 0 0 140px;
+  padding: 10px 8px;
+  background: linear-gradient(to bottom, #7ba2e7, #6375d6);
+}
+.task-group {
+  margin-bottom: 10px;
+  background: #d6dff7;
+  border-radius: 4px 4px 0 0;
+  overflow: hidden;
+}
+.task-group h4 {
+  margin: 0;
+  padding: 4px 8px;
+  font-size: 11px;
+  color: #fff;
+  background: linear-gradient(to right, #0c3ea6, #3a6fd8);
+}
+.task-group p { margin: 0; padding: 6px 8px; font-size: 10.5px; color: #1e3a7a; line-height: 1.5; }
+.task-link {
+  display: block;
+  width: 100%;
+  padding: 3px 8px;
+  text-align: left;
+  font: inherit;
+  font-size: 11px;
+  color: #0b3a9e;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.task-link:hover { text-decoration: underline; color: #3a6fd8; }
+.explorer-main { flex: 1; padding: 10px 12px; overflow: auto; }
+.explorer-files { display: flex; gap: 10px; flex-wrap: wrap; }
+.file-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 120px;
+  padding: 8px 6px;
+  font: inherit;
+  text-align: center;
+  background: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+.file-item:hover, .file-item:focus-visible { background: #e8f0ff; border-color: #b5cdf5; }
+.file-item svg { width: 40px; height: 40px; margin-bottom: 4px; }
+.file-item small { margin-top: 2px; font-size: 10px; color: #666; }
+.records-title {
+  margin: 14px 0 6px;
+  padding-bottom: 3px;
+  font-size: 12px;
+  color: #2a5ca8;
+  border-bottom: 1px solid var(--xp-face-dark);
+}
+.records table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+.records th { text-align: left; font-weight: normal; color: #666; padding: 2px 6px; }
+.records td { padding: 3px 6px; border-top: 1px solid #eee; }
+.records td.num { font-family: "Courier New", monospace; font-weight: bold; }
+.records .empty { color: #666; font-size: 11px; margin: 0; }
+
 /* ---------------- Winamp ---------------- */
 
 .winamp-window { border-radius: 4px; border-color: #333; }
@@ -825,6 +905,8 @@ svg { display: block; width: 100%; height: 100%; }
 .ms-cell:focus-visible,
 .ms-face:focus-visible,
 .drive-reset:focus-visible,
+.file-item:focus-visible,
+.task-link:focus-visible,
 .drive-btn:focus-visible,
 .start-item:focus-visible,
 .link-inline:focus-visible,

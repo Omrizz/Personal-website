@@ -97,6 +97,7 @@
     clampIntoView(win);
     closeStartMenu();
     syncHash(id);
+    document.dispatchEvent(new CustomEvent("window:open", { detail: id }));
   }
   window.openWindow = openWindow;
 
