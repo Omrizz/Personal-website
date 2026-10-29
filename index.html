@@ -133,7 +133,7 @@
       <svg><use href="#icon-mine"/></svg><span>Minesweeper</span>
     </button>
     <button class="desktop-icon" data-window="win-drive">
-      <svg><use href="#icon-car"/></svg><span>Sunset Drive</span>
+      <svg><use href="#icon-car"/></svg><span>Sunset Circuit</span>
     </button>
     <button class="desktop-icon" data-window="win-computer">
       <svg><use href="#icon-computer"/></svg><span>My Computer</span>
@@ -375,7 +375,7 @@ the desktop.</pre>
   <div class="window" id="win-drive" data-icon="icon-car" style="top:90px;left:360px;width:auto;">
     <div class="title-bar">
       <svg class="title-icon"><use href="#icon-car"/></svg>
-      <div class="title-bar-text">Sunset Drive</div>
+      <div class="title-bar-text">Sunset Circuit</div>
       <div class="title-bar-controls">
         <button class="tb-btn tb-min" aria-label="Minimize">&#x2013;</button>
         <button class="tb-btn tb-max" aria-label="Maximize">&#x25a1;</button>
@@ -384,12 +384,11 @@ the desktop.</pre>
     </div>
     <div class="window-body drive-body">
       <div class="drive-hud">
-        <span>Stars: <b id="drive-stars">0</b>/<b id="drive-star-total">0</b></span>
-        <span>Laps: <b id="drive-laps">0</b></span>
-        <button id="drive-reset" class="drive-reset" title="New city" aria-label="Restart">&#x1F504;</button>
+        <label>Track <select id="drive-track"></select></label>
+        <button id="drive-reset" class="drive-reset" title="Back to the grid (R)" aria-label="Restart">&#x1F504;</button>
       </div>
-      <canvas id="drive-canvas" width="480" height="320"></canvas>
-      <div class="drive-hint">Arrow keys / WASD to drive &middot; collect the stars</div>
+      <canvas id="drive-canvas" width="560" height="350" tabindex="0" aria-label="Sunset Circuit racing game"></canvas>
+      <div class="drive-hint">&uarr; gas &middot; &darr; brake &middot; &larr;&rarr; steer &middot; Space handbrake &middot; Enter start &middot; R restart</div>
       <div class="drive-touch" id="drive-touch">
         <button class="drive-btn" data-key="left" aria-label="Steer left">&#8592;</button>
         <div class="drive-touch-col">
@@ -397,6 +396,7 @@ the desktop.</pre>
           <button class="drive-btn" data-key="down" aria-label="Brake">&#8595;</button>
         </div>
         <button class="drive-btn" data-key="right" aria-label="Steer right">&#8594;</button>
+        <button class="drive-btn" data-key="hand" aria-label="Handbrake">HB</button>
       </div>
     </div>
   </div>
@@ -494,7 +494,7 @@ the desktop.</pre>
       <button class="start-item" data-window="win-resume"><svg><use href="#icon-resume"/></svg>Resume</button>
       <button class="start-item" data-window="win-project"><svg><use href="#icon-code"/></svg>Projects</button>
       <button class="start-item" data-window="win-minesweeper"><svg><use href="#icon-mine"/></svg>Minesweeper</button>
-      <button class="start-item" data-window="win-drive"><svg><use href="#icon-car"/></svg>Sunset Drive</button>
+      <button class="start-item" data-window="win-drive"><svg><use href="#icon-car"/></svg>Sunset Circuit</button>
       <button class="start-item" data-window="win-winamp"><svg><use href="#icon-note-play"/></svg>Winamp</button>
     </div>
     <div class="start-menu-col start-menu-right">
