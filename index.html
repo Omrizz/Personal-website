@@ -136,7 +136,7 @@
     <button class="desktop-icon" data-link="https://github.com/omrizz">
       <svg><use href="#icon-folder"/></svg><span>GitHub</span>
     </button>
-    <button class="desktop-icon" data-link="mailto:omrivainz@gmail.com">
+    <button class="desktop-icon" data-window="win-contact">
       <svg><use href="#icon-mail"/></svg><span>Email</span>
     </button>
     <button class="desktop-icon" data-window="win-games">
@@ -489,6 +489,33 @@ the desktop.</pre>
     </form>
   </div>
 
+  <div class="window" id="win-contact" data-icon="icon-mail" style="top:90px;left:230px;width:440px;">
+    <div class="title-bar">
+      <svg class="title-icon"><use href="#icon-mail"/></svg>
+      <div class="title-bar-text">New Message</div>
+      <div class="title-bar-controls">
+        <button class="tb-btn tb-min" aria-label="Minimize">&#x2013;</button>
+        <button class="tb-btn tb-max" aria-label="Maximize">&#x25a1;</button>
+        <button class="tb-btn tb-close" aria-label="Close"><svg><use href="#icon-close"/></svg></button>
+      </div>
+    </div>
+    <div class="menu-bar">File&nbsp;&nbsp;Edit&nbsp;&nbsp;View&nbsp;&nbsp;Insert&nbsp;&nbsp;Format&nbsp;&nbsp;Tools&nbsp;&nbsp;Message&nbsp;&nbsp;Help</div>
+    <form class="window-body contact-body" id="contact-form">
+      <div class="contact-toolbar">
+        <button type="submit" class="xp-button" id="contact-send">&#9993; Send</button>
+        <button type="button" class="xp-button" id="contact-copy">Copy address</button>
+        <a class="xp-button link-button" href="https://github.com/omrizz" target="_blank" rel="noopener">GitHub</a>
+      </div>
+      <label class="contact-row"><span>To:</span><input type="text" value="omrivainz@gmail.com" readonly></label>
+      <label class="contact-row"><span>From:</span><input type="text" id="contact-from" placeholder="your name (optional)"></label>
+      <label class="contact-row"><span>Subject:</span><input type="text" id="contact-subject" value="Hello from your website"></label>
+      <label class="contact-message"><span class="sr-only">Message</span>
+        <textarea id="contact-body" rows="7" placeholder="Write your message here. Pressing Send opens it in your own mail app -- nothing is stored or sent from this page."></textarea>
+      </label>
+      <p class="contact-status" id="contact-status" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+
   <div class="window" id="win-minesweeper" data-icon="icon-mine" style="top:120px;left:420px;width:auto;">
     <div class="title-bar">
       <svg class="title-icon"><use href="#icon-mine"/></svg>
@@ -643,7 +670,7 @@ the desktop.</pre>
       <button class="start-item" data-window="win-computer"><svg><use href="#icon-computer"/></svg>My Computer</button>
       <button class="start-item" data-window="win-recycle"><svg><use href="#icon-trash"/></svg>Recycle Bin</button>
       <button class="start-item" data-link="https://github.com/omrizz"><svg><use href="#icon-folder"/></svg>GitHub</button>
-      <button class="start-item" data-link="mailto:omrivainz@gmail.com"><svg><use href="#icon-mail"/></svg>Email</button>
+      <button class="start-item" data-window="win-contact"><svg><use href="#icon-mail"/></svg>Email</button>
       <button class="start-item" data-window="win-run"><svg><use href="#icon-run"/></svg>Run...</button>
     </div>
   </div>
@@ -659,5 +686,6 @@ the desktop.</pre>
 <script src="assets/drive.js"></script>
 <script src="assets/records.js"></script>
 <script src="assets/run.js"></script>
+<script src="assets/contact.js"></script>
 </body>
 </html>
