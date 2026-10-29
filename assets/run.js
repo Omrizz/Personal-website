@@ -24,12 +24,13 @@
     minesweeper: "win-minesweeper", winmine: "win-minesweeper", mines: "win-minesweeper",
     circuit: "win-drive", race: "win-drive", racing: "win-drive", drive: "win-drive", "sunset circuit": "win-drive",
     winamp: "win-winamp", music: "win-winamp", player: "win-winamp",
+    display: "win-display", theme: "win-display", themes: "win-display", wallpaper: "win-display", desk: "win-display",
     email: "win-contact", mail: "win-contact", contact: "win-contact", outlook: "win-contact"
   };
   var LINKS = {
     github: "https://github.com/omrizz"
   };
-  var SUGGEST = ["about", "resume", "projects", "skills", "games", "circuit", "minesweeper", "winamp", "computer", "recycle", "github", "email", "help"];
+  var SUGGEST = ["about", "resume", "projects", "skills", "games", "circuit", "minesweeper", "winamp", "computer", "recycle", "display", "github", "email", "help"];
 
   SUGGEST.forEach(function (name) {
     var o = document.createElement("option");

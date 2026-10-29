@@ -90,7 +90,7 @@ svg { display: block; width: 100%; height: 100%; }
   width: 100%;
   height: calc(100% - 34px);
   overflow: hidden;
-  background: linear-gradient(to bottom, var(--sky-top) 0%, #5fa8ec 45%, var(--sky-bottom) 78%);
+  background: linear-gradient(to bottom, var(--sky-top) 0%, var(--sky-mid, #5fa8ec) 45%, var(--sky-bottom) 78%);
 }
 
 .clouds {
@@ -113,8 +113,34 @@ svg { display: block; width: 100%; height: 100%; }
   height: 55%;
   display: block;
 }
-.hill-back { fill: #4fae34; opacity: .85; }
-.hill-front { fill: #59b83a; }
+.hill-back { fill: var(--hill-back, #4fae34); opacity: .85; }
+.hill-front { fill: var(--hill-front, #59b83a); }
+.clouds { opacity: var(--cloud-opacity, 1); }
+
+/* Wallpaper themes, chosen in Display Properties */
+:root[data-theme="sunset"] {
+  --sky-top: #2a1750; --sky-mid: #b24a8a; --sky-bottom: #ff9a5c;
+  --hill-back: #3a2a7a; --hill-front: #2b1d5e; --cloud-opacity: .35;
+}
+:root[data-theme="night"] {
+  --sky-top: #050a26; --sky-mid: #0e1c52; --sky-bottom: #24408a;
+  --hill-back: #14305a; --hill-front: #0d2447; --cloud-opacity: 1;
+}
+:root[data-theme="night"] .clouds {
+  background-image:
+    radial-gradient(1.5px 1.5px at 8% 12%, #fff, transparent),
+    radial-gradient(1px 1px at 17% 31%, #dfe8ff, transparent),
+    radial-gradient(1.5px 1.5px at 29% 9%, #fff, transparent),
+    radial-gradient(1px 1px at 38% 24%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 47% 14%, #dfe8ff, transparent),
+    radial-gradient(1px 1px at 58% 34%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 66% 8%, #fff, transparent),
+    radial-gradient(1px 1px at 76% 22%, #dfe8ff, transparent),
+    radial-gradient(1.5px 1.5px at 86% 12%, #fff, transparent),
+    radial-gradient(1px 1px at 93% 30%, #fff, transparent),
+    radial-gradient(20px 20px at 82% 18%, rgba(255,250,220,.9), rgba(255,250,220,0) 70%);
+}
+
 
 /* ---------------- Desktop icons ---------------- */
 
@@ -631,6 +657,57 @@ svg { display: block; width: 100%; height: 100%; }
 }
 .contact-status { min-height: 1.2em; margin: 0; font-size: 11px; color: #2f7d1f; }
 .contact-row input:focus-visible, .contact-message textarea:focus-visible { outline: 1px dotted #000; outline-offset: 1px; }
+
+/* ---------------- Context menu + Display Properties ---------------- */
+
+#context-menu {
+  position: absolute;
+  z-index: 2500;
+  min-width: 190px;
+  padding: 2px;
+  background: #fff;
+  border: 1px solid #7f9db9;
+  box-shadow: 3px 3px 4px rgba(0,0,0,.35);
+  font-size: 12px;
+}
+#context-menu button {
+  display: block;
+  width: 100%;
+  padding: 4px 24px 4px 26px;
+  text-align: left;
+  font: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+#context-menu button:hover, #context-menu button:focus-visible { background: #316ac5; color: #fff; outline: none; }
+#context-menu hr { margin: 2px 0; border: none; border-top: 1px solid #d4d0c8; }
+
+.display-body { display: flex; flex-direction: column; gap: 10px; padding: 12px; }
+.display-preview {
+  height: 90px;
+  border: 2px solid;
+  border-color: #808080 #fff #fff #808080;
+  background: linear-gradient(to bottom, var(--sky-top) 0%, var(--sky-mid, #5fa8ec) 45%, var(--sky-bottom) 78%);
+  position: relative;
+  overflow: hidden;
+}
+.display-preview::after {
+  content: "";
+  position: absolute;
+  left: -10%; right: -10%; bottom: -30px;
+  height: 50px;
+  border-radius: 50% 50% 0 0;
+  background: var(--hill-front, #59b83a);
+}
+.theme-list { display: flex; flex-direction: column; gap: 4px; border: 1px solid var(--xp-face-dark); padding: 6px 8px; background: #fff; }
+.theme-list label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.theme-chip { width: 34px; height: 20px; border: 1px solid #555; }
+.theme-chip.day { background: linear-gradient(#1e6fd9, #bfe3ff 80%, #59b83a 80%); }
+.theme-chip.sunset { background: linear-gradient(#2a1750, #ff9a5c 80%, #2b1d5e 80%); }
+.theme-chip.night { background: linear-gradient(#050a26, #24408a 80%, #0d2447 80%); }
+.display-buttons { display: flex; justify-content: flex-end; gap: 6px; }
+.display-buttons .xp-button { min-width: 72px; }
 
 /* ---------------- Run dialog ---------------- */
 

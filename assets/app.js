@@ -25,7 +25,7 @@
     about: "win-about", resume: "win-resume", projects: "win-project",
     skills: "win-programs", computer: "win-computer", recycle: "win-recycle",
     minesweeper: "win-minesweeper", circuit: "win-drive", winamp: "win-winamp",
-    games: "win-games", contact: "win-contact"
+    games: "win-games", contact: "win-contact", display: "win-display"
   };
   var WINDOW_TO_HASH = {};
   Object.keys(HASH_TO_WINDOW).forEach(function (h) { WINDOW_TO_HASH[HASH_TO_WINDOW[h]] = h; });
