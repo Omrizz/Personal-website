@@ -292,7 +292,7 @@
       idx: idx, prog: idx - track.N, off: Math.abs(off), lapsDone: 0, lapStart: 0,
       lapTimes: [], finished: false, finishTime: null,
       speed: 0, slip: 0, braking: false, onRoad: true,
-      skill: 1, lane: 0, offTicks: 0, bump: 0
+      skill: 1, lane: 0, offTicks: 0, bump: 0, draft: false, wrong: 0, lastDelta: 0, offRun: 0, recovered: 0
     };
   }
 
@@ -370,6 +370,8 @@
       advance();
     } else if (e.code === "KeyR") {
       newRace();
+    } else if (e.code === "KeyT") {
+      recover();
     } else if (e.code === "KeyM") {
       setMuted(!save.muted);
     }
@@ -393,6 +395,9 @@
     btn.addEventListener("mouseup", release);
     btn.addEventListener("mouseleave", release);
   });
+
+  var recBtn = document.getElementById("drive-recover");
+  if (recBtn) recBtn.addEventListener("click", function () { recover(); });
 
   canvas.addEventListener("click", advance);
   resetBtn.addEventListener("click", function () { newRace(); });
@@ -635,17 +640,32 @@
   /* ---------------- Simulation ---------------- */
 
   function trackSearch(car) {
-    var c = track.center, N = track.N, best = Infinity, bi = car.idx;
-    for (var d = -36; d <= 36; d++) {
-      var i = (car.idx + d + N) % N;
-      var dx = c[i].x - car.x, dy = c[i].y - car.y;
-      var dd = dx * dx + dy * dy;
+    var c = track.center, N = track.N, best = Infinity, bi = car.idx, i, dx, dy, dd;
+    for (var d = -10; d <= 10; d++) {
+      i = (car.idx + d + N) % N;
+      dx = c[i].x - car.x; dy = c[i].y - car.y;
+      dd = dx * dx + dy * dy;
       if (dd < best) { best = dd; bi = i; }
+    }
+    // Lost the local trail (spun off, recovered, pushed around)? Re-anchor on the
+    // globally nearest sample, but never credit that jump as distance driven --
+    // otherwise cutting between two arms of a hairpin would skip a chunk of lap.
+    var reanchored = false;
+    if (best > 4900) {
+      var gb = Infinity, gi = bi;
+      for (i = 0; i < N; i++) {
+        dx = c[i].x - car.x; dy = c[i].y - car.y;
+        dd = dx * dx + dy * dy;
+        if (dd < gb) { gb = dd; gi = i; }
+      }
+      if (gb < best * 0.6) { best = gb; bi = gi; reanchored = true; }
     }
     var delta = bi - car.idx;
     if (delta > N / 2) delta -= N;
     if (delta < -N / 2) delta += N;
-    if (Math.abs(delta) < 40) car.prog += delta;
+    // a car covers under one sample per tick; anything bigger is a hop between track arms
+    if (!reanchored && Math.abs(delta) <= 3) car.prog += delta;
+    car.lastDelta = reanchored ? 0 : delta;
     car.idx = bi;
     car.off = Math.sqrt(best);
     car.onRoad = car.off < TRACK_W / 2 + 6;
@@ -666,10 +686,10 @@
     var vf = car.vx * fx + car.vy * fy;
     var vl = car.vx * rx + car.vy * ry;
 
-    var maxV = MAX_SPEED * (car.topSpeed || 1) * (car.onRoad ? 1 : 0.45);
+    var maxV = MAX_SPEED * (car.topSpeed || 1) * (car.onRoad ? 1 : 0.45) * (car.draft ? 1.06 : 1);
     car.braking = false;
     if (ctl.throttle) {
-      vf += ACCEL * (1 - clamp(vf / maxV, 0, 1) * 0.6);
+      vf += ACCEL * (car.draft ? 1.3 : 1) * (1 - clamp(vf / maxV, 0, 1) * 0.6);
     }
     if (ctl.brake) {
       if (vf > 0.3) { vf -= BRAKE; car.braking = true; }
@@ -700,6 +720,8 @@
 
     var wasLaps = car.lapsDone;
     trackSearch(car);
+    if (car.speed > 1.5 && car.lastDelta < 0) car.wrong++; else car.wrong = Math.max(0, car.wrong - 2);
+    car.offRun = car.onRoad ? 0 : car.offRun + 1;
     var laps = Math.max(0, Math.floor(car.prog / track.N));
     if (laps > wasLaps) {
       car.lapsDone = laps;
@@ -732,7 +754,7 @@
     if (newLap) rec.lap = bestLap;
     if (newTotal) {
       rec.total = player.finishTime;
-      if (mode === "trial") rec.ghost = ghostRec.slice();
+      if (mode === "trial" && !player.recovered) rec.ghost = ghostRec.slice();
     }
     rec.track = track.name;
     rec.mode = mode;
@@ -750,6 +772,34 @@
     var r = 1, sc = score(car);
     cars.forEach(function (o) { if (o !== car && score(o) > sc) r++; });
     return r;
+  }
+
+  function updateDrafting() {
+    cars.forEach(function (car) {
+      car.draft = false;
+      var fx = Math.cos(car.angle), fy = Math.sin(car.angle);
+      if (car.speed < 2.5) return;
+      for (var i = 0; i < cars.length; i++) {
+        var o = cars[i];
+        if (o === car) continue;
+        var dx = o.x - car.x, dy = o.y - car.y;
+        var ahead = dx * fx + dy * fy;
+        var side = Math.abs(-dx * fy + dy * fx);
+        if (ahead > 24 && ahead < 150 && side < 22 && o.speed > 2) { car.draft = true; break; }
+      }
+    });
+  }
+
+  function recover() {
+    if (phase !== "racing" || player.finished) return;
+    var c = track.center[player.idx];
+    player.x = c.x; player.y = c.y;
+    player.angle = c.ang;
+    player.vx = 0; player.vy = 0; player.steer = 0;
+    player.markPrev = null;
+    player.recovered++;
+    tick += 180;
+    banner = { text: "RECOVERED  +3.00s", color: "#ffb63f", ticks: 120 };
   }
 
   function aiControls(car) {
@@ -826,6 +876,7 @@
       }
     }
     if (phase === "racing" || phase === "finished" || phase === "countdown" || phase === "menu") {
+      updateDrafting();
       cars.forEach(function (car) {
         var ctl;
         if (car.isPlayer) {
@@ -845,8 +896,8 @@
         c.bump = 0;
       });
     }
+    if (phase === "racing" || phase === "finished") tick++;
     if (phase === "racing") {
-      tick++;
       if (mode === "trial" && tick % 2 === 0) {
         ghostRec.push(Math.round(player.x), Math.round(player.y), Math.round(wrapAngle(player.angle) * 100));
       }
@@ -983,6 +1034,11 @@
     if (rec && rec.lap != null) text("BEST " + fmtTime(rec.lap), 10, 56, 12, "#cfe");
     if (ghostPlay) text("\u25cf ghost", W - 10, 36, 11, "#cfe8ff", "right");
     if (banner) text(banner.text, W / 2, 60, 18, banner.color, "center");
+    if (phase === "racing") {
+      if (player.wrong > 40) text("WRONG WAY", W / 2, 96, 22, "#ff5a5a", "center");
+      else if (player.offRun > 150) text("Stuck? Press T to recover (+3s)", W / 2, H - 20, 12, "#ffe066", "center");
+      if (player.draft) text("SLIPSTREAM", W / 2, 84, 13, "#8fd9ff", "center");
+    }
     text(Math.round(Math.abs(player.speed) * 38) + " km/h", 10, H - 14, 14);
   }
 
@@ -1078,6 +1134,7 @@
         cars: cars.map(function (c) { return { name: c.name, laps: c.lapsDone, prog: c.prog, finished: c.finished, finishTime: c.finishTime, lapTimes: c.lapTimes, offRoadTicks: c.offTicks }; })
       };
     },
+    cars: function () { return cars; },
     start: advance,
     autopilot: function (on) { autopilot = on; },
     setMode: function (m) { mode = m; newRace(); },
