@@ -79,7 +79,8 @@
     if (win.classList.contains("maximized")) return;
     var rect = win.getBoundingClientRect();
     var maxLeft = Math.max(0, desktop.clientWidth - Math.min(rect.width, desktop.clientWidth));
-    var maxTop = Math.max(0, desktop.clientHeight - 40);
+    // keep the whole window on screen (bodies scroll when taller than the desktop)
+    var maxTop = Math.max(0, desktop.clientHeight - Math.min(rect.height, desktop.clientHeight));
     var left = Math.min(Math.max(rect.left, 0), maxLeft);
     var top = Math.min(Math.max(rect.top, 0), maxTop);
     win.style.left = left + "px";

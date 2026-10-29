@@ -175,7 +175,7 @@ the desktop.</pre>
     </div>
   </div>
 
-  <div class="window" id="win-project" data-icon="icon-code" style="top:110px;left:170px;width:440px;">
+  <div class="window" id="win-project" data-icon="icon-code" style="top:70px;left:170px;width:500px;">
     <div class="title-bar">
       <svg class="title-icon"><use href="#icon-code"/></svg>
       <div class="title-bar-text">Projects</div>
@@ -187,6 +187,22 @@ the desktop.</pre>
     </div>
     <div class="window-body project-body">
       <div class="project-card">
+        <svg class="project-art" viewBox="0 0 440 64" role="img" aria-label="Diagram: a Jira ticket flows through five Claude agents and becomes a validated test plan">
+          <rect x="4" y="14" width="64" height="36" rx="4" fill="#dfe8f5" stroke="#5b7fd6"/>
+          <text x="36" y="37" text-anchor="middle" font-size="11" fill="#1e3a7a">Jira</text>
+          <g stroke="#7a90b8" stroke-width="1.5" fill="none">
+            <path d="M68 32h24M132 32h22M194 32h22M256 32h22M318 32h22M380 32h22"/>
+          </g>
+          <g fill="#fff" stroke="#2a5ca8" stroke-width="1.5">
+            <circle cx="112" cy="32" r="18"/><circle cx="174" cy="32" r="18"/><circle cx="236" cy="32" r="18"/>
+            <circle cx="298" cy="32" r="18"/><circle cx="360" cy="32" r="18"/>
+          </g>
+          <g font-size="11" fill="#2a5ca8" text-anchor="middle">
+            <text x="112" y="36">1</text><text x="174" y="36">2</text><text x="236" y="36">3</text><text x="298" y="36">4</text><text x="360" y="36">5</text>
+          </g>
+          <rect x="402" y="14" width="36" height="36" rx="4" fill="#e4f6dc" stroke="#3f9e2e"/>
+          <path d="M412 33l6 6 12-13" stroke="#3f9e2e" stroke-width="3" fill="none"/>
+        </svg>
         <h2>agentic-libs</h2>
         <p class="status-line"><span class="dot"></span> currently building this &middot; 2025&ndash;2026</p>
         <p>A 5-agent Claude AI pipeline that converts Jira tickets into
@@ -194,15 +210,58 @@ the desktop.</pre>
         MCP -- creating the ticket, extracting the relevant affected
         areas, and writing and executing tests. Published as a Claude
         Code plugin.</p>
+        <p class="tags"><span class="tag">Claude</span><span class="tag">MCP</span><span class="tag">Playwright</span><span class="tag">Multi-agent</span></p>
         <a class="xp-button link-button" href="https://github.com/omrizz/agentic-libs" target="_blank" rel="noopener">View on GitHub</a>
       </div>
       <div class="project-card">
+        <svg class="project-art" viewBox="0 0 440 64" role="img" aria-label="Diagram: a three-layer test framework running on desktop and mobile through Jenkins">
+          <g stroke="#2a5ca8" stroke-width="1.5">
+            <rect x="4" y="4" width="240" height="16" rx="3" fill="#a6c8f0"/>
+            <rect x="4" y="24" width="240" height="16" rx="3" fill="#c9defa"/>
+            <rect x="4" y="44" width="240" height="16" rx="3" fill="#e4eefc"/>
+          </g>
+          <g font-size="10" fill="#1e3a7a" text-anchor="middle">
+            <text x="124" y="16">layer 1</text><text x="124" y="36">layer 2</text><text x="124" y="56">layer 3</text>
+          </g>
+          <path d="M248 32h30" stroke="#7a90b8" stroke-width="1.5"/>
+          <rect x="282" y="8" width="70" height="22" rx="4" fill="#fff" stroke="#7a90b8"/>
+          <text x="317" y="23" text-anchor="middle" font-size="10" fill="#333">desktop</text>
+          <rect x="282" y="34" width="70" height="22" rx="4" fill="#fff" stroke="#7a90b8"/>
+          <text x="317" y="49" text-anchor="middle" font-size="10" fill="#333">mobile</text>
+          <path d="M356 32h24" stroke="#7a90b8" stroke-width="1.5"/>
+          <rect x="384" y="16" width="52" height="32" rx="4" fill="#fbe9d0" stroke="#c98f0a"/>
+          <text x="410" y="36" text-anchor="middle" font-size="10" fill="#7a4b00">Jenkins</text>
+        </svg>
         <h2>frontend-tests</h2>
         <p class="status-line muted-line">Enterprise E2E testing framework &middot; 2024&ndash;2025</p>
         <p>A Playwright + TypeScript E2E framework with a 3-layer
         architecture, multi-device support, and Jenkins CI/CD, built
         for a financial trading platform (auth, trading flows, UI
         persistence across desktop and mobile). Private repository.</p>
+        <p class="tags"><span class="tag">Playwright</span><span class="tag">TypeScript</span><span class="tag">Jenkins</span><span class="tag">Allure</span></p>
+      </div>
+      <div class="project-card">
+        <svg class="project-art" viewBox="0 0 440 64" role="img" aria-label="Illustration: a small desktop window with a play button, a checkered flag and a mine">
+          <rect x="4" y="4" width="432" height="56" rx="4" fill="#3a93ff"/>
+          <rect x="12" y="14" width="120" height="40" rx="2" fill="#ece9d8" stroke="#0a246a"/>
+          <rect x="12" y="14" width="120" height="9" fill="#0058ee"/>
+          <rect x="150" y="14" width="120" height="40" rx="2" fill="#ece9d8" stroke="#0a246a"/>
+          <rect x="150" y="14" width="120" height="9" fill="#0058ee"/>
+          <rect x="288" y="14" width="140" height="40" rx="2" fill="#1c1c1c" stroke="#555"/>
+          <path d="M296 44l8-14 8 14z" fill="#7cff7c"/>
+          <g fill="#111"><rect x="160" y="30" width="8" height="8"/><rect x="176" y="30" width="8" height="8"/><rect x="168" y="38" width="8" height="8"/><rect x="184" y="38" width="8" height="8"/></g>
+          <circle cx="72" cy="40" r="8" fill="#2b2b2b"/>
+        </svg>
+        <h2>OmriOS &mdash; this site</h2>
+        <p class="status-line muted-line">Personal desktop &middot; 2026</p>
+        <p>The Windows XP-style desktop you're standing in: a window
+        manager, Minesweeper, a Winamp-style player and Sunset Circuit,
+        an arcade racer with drift physics, AI rivals and lap records.
+        Plain HTML, CSS and JavaScript -- no framework, no build step,
+        no external assets.</p>
+        <p class="tags"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span><span class="tag">Canvas</span><span class="tag">Web Audio</span></p>
+        <a class="xp-button link-button" href="https://github.com/omrizz/Personal-website" target="_blank" rel="noopener">View source</a>
+        <button type="button" class="xp-button link-button" data-window="win-drive">Play Sunset Circuit</button>
       </div>
     </div>
   </div>
