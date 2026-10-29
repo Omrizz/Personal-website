@@ -156,6 +156,8 @@
 
   windows.forEach(function (win) {
     var titleBar = win.querySelector(".title-bar");
+    win.setAttribute("role", "dialog");
+    win.setAttribute("aria-label", win.querySelector(".title-bar-text").textContent);
 
     win.addEventListener("mousedown", function () { bringToFront(win); });
     win.addEventListener("touchstart", function () { bringToFront(win); }, { passive: true });
