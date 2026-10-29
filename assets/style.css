@@ -515,6 +515,7 @@ svg { display: block; width: 100%; height: 100%; }
 .drive-reset:active { border-color: #808080 #fff #fff #808080; }
 #drive-canvas {
   display: block;
+  aspect-ratio: 560 / 350;
   width: 560px;
   max-width: 100%;
   border: 3px solid;
@@ -542,6 +543,15 @@ svg { display: block; width: 100%; height: 100%; }
 @media (hover: none) and (pointer: coarse) {
   .drive-touch { display: flex; }
 }
+
+/* a maximized game window scales the playfield up to the available space */
+.window.maximized .drive-body { justify-content: center; }
+.window.maximized .drive-hud,
+.window.maximized #drive-canvas {
+  width: min(100%, calc((100vh - 230px) * 1.6));
+  max-width: none;
+}
+.window.maximized #drive-canvas { height: auto; }
 
 /* ---------------- Games folder (Explorer-style) ---------------- */
 
