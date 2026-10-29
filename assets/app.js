@@ -326,6 +326,7 @@
   var bootScreen = document.getElementById("boot");
   function dismissBoot() {
     bootScreen.classList.add("fade");
+    if (window.uiSound) window.uiSound.play("startup");
     var anyOpen = windows.some(function (w) { return w.classList.contains("open"); });
     if (!anyOpen) openWindow("win-about");
   }
@@ -364,6 +365,7 @@
     } else if (type === "off") {
       shutdownOverlay.hidden = true;
       shutdownScreen.hidden = false;
+      if (window.uiSound) window.uiSound.play("shutdown");
       if (window.winamp) window.winamp.stop();
     } else if (type === "restart") {
       shutdownOverlay.hidden = true;

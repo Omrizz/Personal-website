@@ -44,6 +44,7 @@
   }
 
   function showError(msg) {
+    if (window.uiSound) window.uiSound.play("error");
     errorEl.textContent = msg;
     errorEl.hidden = false;
   }

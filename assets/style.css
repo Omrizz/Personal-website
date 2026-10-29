@@ -914,6 +914,26 @@ svg { display: block; width: 100%; height: 100%; }
   color: #fff;
   font-size: 11px;
 }
+#tray-sound {
+  padding: 0;
+  font-size: 13px;
+  line-height: 1;
+  color: #fff;
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: .9;
+}
+#tray-sound:hover { opacity: 1; }
+#tray-sound:focus-visible { outline: 1px dotted #fff; outline-offset: 2px; }
+
+/* windows ease in instead of popping */
+@keyframes win-open { from { opacity: 0; transform: scale(.97) translateY(4px); } to { opacity: 1; transform: none; } }
+.window.open:not(.minimized) { animation: win-open .14s ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  .window.open:not(.minimized) { animation: none; }
+}
+
 /* ---------------- Start menu ---------------- */
 
 #start-menu {
