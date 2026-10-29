@@ -129,6 +129,7 @@
 
     var track = { name: def.name, N: N, length: total, center: center, ground: makeLayer(), top: makeLayer() };
     paintTrack(track, def.seed);
+    buildMinimap(track);
     return track;
   }
 
@@ -294,6 +295,7 @@
   function getBest() { return save.best[bestKey()] || null; }
 
   function newRace() {
+    resetEffects();
     ghostRec = [];
     banner = null;
     resultInfo = null;
@@ -525,6 +527,92 @@
   muteBtn.addEventListener("click", function () { ensureAudio(); setMuted(!save.muted); });
   setMuted(save.muted);
 
+  /* ---------------- Effects: tyre marks, smoke, sparks ---------------- */
+
+  var marks = null, marksCtx = null;
+  var particles = [];
+  var fxClock = 0;
+
+  function resetEffects() {
+    if (!marks) { marks = makeLayer(); marksCtx = marks.getContext("2d"); }
+    marksCtx.clearRect(0, 0, WORLD_W, WORLD_H);
+    particles = [];
+  }
+
+  function spawn(x, y, vx, vy, life, size, grow, rgb) {
+    if (particles.length > 220) return;
+    particles.push({ x: x, y: y, vx: vx, vy: vy, life: life, max: life, size: size, grow: grow, rgb: rgb });
+  }
+
+  function emitWheelFx(car, vl, hand) {
+    var fx = Math.cos(car.angle), fy = Math.sin(car.angle);
+    var rx = -fy, ry = fx;
+    var sliding = car.onRoad && (Math.abs(vl) > 1.0 || (hand && car.speed > 1.5));
+    if (sliding) {
+      var bx = car.x - fx * 11, by = car.y - fy * 11;
+      var lx = bx - rx * 6.5, ly = by - ry * 6.5, rrx = bx + rx * 6.5, rry = by + ry * 6.5;
+      if (car.markPrev) {
+        marksCtx.strokeStyle = "rgba(10,10,20,.3)";
+        marksCtx.lineWidth = 2.6;
+        marksCtx.lineCap = "round";
+        marksCtx.beginPath();
+        marksCtx.moveTo(car.markPrev[0], car.markPrev[1]); marksCtx.lineTo(lx, ly);
+        marksCtx.moveTo(car.markPrev[2], car.markPrev[3]); marksCtx.lineTo(rrx, rry);
+        marksCtx.stroke();
+      }
+      car.markPrev = [lx, ly, rrx, rry];
+      if (fxClock % 3 === 0) spawn(bx, by, (Math.random() - 0.5) * 0.5, (Math.random() - 0.5) * 0.5, 34, 3, 0.28, "235,235,245");
+    } else {
+      car.markPrev = null;
+      if (!car.onRoad && Math.abs(car.speed) > 1.5 && fxClock % 3 === 0) {
+        spawn(car.x - fx * 10, car.y - fy * 10, -car.vx * 0.2 + (Math.random() - 0.5) * 0.6, -car.vy * 0.2 + (Math.random() - 0.5) * 0.6, 28, 3, 0.2, "196,170,120");
+      }
+    }
+  }
+
+  function emitSparks(car, amount) {
+    var n = Math.round(4 + amount * 8);
+    for (var i = 0; i < n; i++) {
+      var a = Math.random() * TAU, sp = 1 + Math.random() * 2.5;
+      spawn(car.x, car.y, Math.cos(a) * sp, Math.sin(a) * sp, 12 + Math.random() * 8, 1.6, -0.05, "255,214,90");
+    }
+  }
+
+  function updateParticles() {
+    for (var i = particles.length - 1; i >= 0; i--) {
+      var p = particles[i];
+      p.x += p.vx; p.y += p.vy;
+      p.vx *= 0.96; p.vy *= 0.96;
+      p.size = Math.max(0.3, p.size + p.grow);
+      if (--p.life <= 0) particles.splice(i, 1);
+    }
+  }
+
+  function drawParticles() {
+    particles.forEach(function (p) {
+      ctx.fillStyle = "rgba(" + p.rgb + "," + (0.55 * p.life / p.max).toFixed(3) + ")";
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, TAU);
+      ctx.fill();
+    });
+  }
+
+  function buildMinimap(t) {
+    var c = document.createElement("canvas");
+    c.width = 120; c.height = 80;
+    var g = c.getContext("2d");
+    g.scale(120 / WORLD_W, 80 / WORLD_H);
+    g.lineJoin = "round";
+    tracePath(g, t);
+    g.strokeStyle = "rgba(255,255,255,.9)";
+    g.lineWidth = 80;
+    g.stroke();
+    var c0 = t.center[0];
+    g.fillStyle = "#ff5d8f";
+    g.beginPath(); g.arc(c0.x, c0.y, 55, 0, TAU); g.fill();
+    t.minimap = c;
+  }
+
   /* ---------------- Simulation ---------------- */
 
   function trackSearch(car) {
@@ -583,6 +671,7 @@
     car.y += car.vy;
     car.speed = vf;
     car.slip = vl;
+    emitWheelFx(car, vl, ctl.hand);
 
     var pad = 24;
     if (car.x < pad) { car.x = pad; car.vx = Math.abs(car.vx) * 0.3; }
@@ -703,6 +792,9 @@
   }
 
   function update() {
+    fxClock++;
+    updateParticles();
+    shake *= 0.88;
     if (phase === "countdown") {
       var before = Math.ceil(countdown - 0.2);
       countdown -= STEP;
@@ -728,7 +820,11 @@
         for (var j = i + 1; j < cars.length; j++) collide(cars[i], cars[j]);
       }
       if (player.bump > 0.12) sfx.bump(player.bump);
-      cars.forEach(function (c) { c.bump = 0; });
+      if (player.bump > 0.25) shake = Math.max(shake, 7 * player.bump);
+      cars.forEach(function (c) {
+        if (c.bump > 0.12) emitSparks(c, c.bump);
+        c.bump = 0;
+      });
     }
     if (phase === "racing") {
       tick++;
@@ -821,11 +917,13 @@
     ctx.save();
     ctx.translate(W / 2, H / 2);
     ctx.scale(cam.zoom, cam.zoom);
-    ctx.translate(-cx, -cy);
+    ctx.translate(-cx + (shake > 0.3 ? (Math.random() - 0.5) * shake : 0), -cy + (shake > 0.3 ? (Math.random() - 0.5) * shake : 0));
 
     ctx.drawImage(track.ground, sx, sy, sw, sh, sx, sy, sw, sh);
+    ctx.drawImage(marks, sx, sy, sw, sh, sx, sy, sw, sh);
     drawGhost();
     cars.slice().sort(function (a, b) { return a.y - b.y; }).forEach(function (car) { drawCar(car); });
+    drawParticles();
     ctx.drawImage(track.top, sx, sy, sw, sh, sx, sy, sw, sh);
     ctx.restore();
   }
@@ -840,8 +938,24 @@
     ctx.fillText(str, x, y);
   }
 
+  function drawMinimap() {
+    var mx = W - 130, my = H - 90;
+    ctx.fillStyle = "rgba(10,5,30,.55)";
+    ctx.fillRect(mx - 4, my - 4, 128, 88);
+    ctx.globalAlpha = 0.5;
+    ctx.drawImage(track.minimap, mx, my);
+    ctx.globalAlpha = 1;
+    cars.forEach(function (car) {
+      var px = mx + car.x * 120 / WORLD_W, py = my + car.y * 80 / WORLD_H;
+      ctx.fillStyle = car.color;
+      ctx.beginPath(); ctx.arc(px, py, car.isPlayer ? 4 : 3, 0, TAU); ctx.fill();
+      if (car.isPlayer) { ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.5; ctx.stroke(); }
+    });
+  }
+
   function drawHud() {
     if (phase === "menu") return;
+    drawMinimap();
     var lap = Math.min(TOTAL_LAPS, player.lapsDone + 1);
     text("LAP " + lap + "/" + TOTAL_LAPS, 10, 16, 14);
     text(fmtTime(phase === "racing" || phase === "finished" ? player.finished ? player.finishTime : tick * STEP : 0), 10, 36, 14, "#ffe066");
